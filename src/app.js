@@ -70,6 +70,10 @@ app.set('views', __dirname + '/views');
 // Archivos estáticos
 app.use(express.static(__dirname + '/public'));
 app.use(cargarCarrito); // ✅ Esto debe ir ANTES de tus app.use(router)
+app.get('/ping', (req, res) => {
+  res.status(200).send('pong');
+});
+
 // Rutas
 app.use('/pago', pagoRoutes);
 app.use('/usuarios', usuarioRoutes);
