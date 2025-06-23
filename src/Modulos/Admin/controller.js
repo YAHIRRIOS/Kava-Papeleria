@@ -232,7 +232,7 @@ exports.getGestionarPromociones = async (req, res) => {
 exports.formularioDescuentos = async (req, res) => {
   const productos = await Producto.find();
   const descuentos = await Descuento.find({ activo: true }).populate('producto');
-  res.render('admin/gestionarDescuentos', { productos, descuentos });
+  res.render('Admin/gestionarDescuentos', { productos, descuentos });
 };
 
 
