@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Stock</title>
+    <link rel="stylesheet" href="/css/Admin/gestionarStock.css">
+    <link rel="stylesheet" href="/css/Admin/dashboard.css">
+</head>
+<body>
+    <!-- Contenedor principal -->
+    <div class="admin-container">
+          <!-- Sidebar -->
+          <%- include('../template/dashboard') %>
+
+        <!-- Área de contenido principal -->
+        <div class="content-area">
+            <div class="content-wrapper">
+                <h3>Gestionar Stock</h3>
+                <form id="stock-form" action="/admin/actualizarStock" method="POST">
+                    <!-- Acción -->
+                    <div class="form-group">
+                        <label for="action-type">Seleccionar Acción</label>
+                        <select id="action-type" name="action" onchange="toggleActionFields()" required>
+                            <option value="agregar">Agregar Stock</option>
+                            <option value="eliminar">Eliminar Stock</option>
+                        </select>
+                    </div>
+
+                    <!-- Producto -->
+                    <div class="form-group">
+                        <label for="product-select">Seleccionar Producto</label>
+                        <select id="product-select" name="productoId" required>
+                            <% productos.forEach(producto => { %>
+                                <option value="<%= producto._id %>"><%= producto.nombre %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <!-- Cantidad -->
+                    <div class="form-group" id="quantity-container">
+                        <label for="stock-change">Cantidad a Agregar o Eliminar</label>
+                        <input type="number" id="stock-change" name="cantidad" required placeholder="Ej. 10">
+                    </div>
+
+                    <!-- Botón -->
+                    <button type="submit" class="btn-submit">Aplicar Cambio</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleActionFields() {
+            const actionType = document.getElementById('action-type').value;
+            const label = document.querySelector('#quantity-container label');
+            const input = document.querySelector('#quantity-container input');
+
+            if (actionType === 'eliminar') {
+                label.innerText = "Cantidad a Eliminar";
+                input.placeholder = "Ej. 10";
+            } else {
+                label.innerText = "Cantidad a Agregar";
+                input.placeholder = "Ej. 10";
+            }
+        }
+
+        window.onload = toggleActionFields;
+    </script>
+</body>
+</html>

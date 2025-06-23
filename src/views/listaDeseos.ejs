@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/barra-navegacion.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/listaDeseos.css">
+    <title>Lista de Deseos - Papelería Estrella</title>
+
+    <style>
+        /* Opcional: Para que los enlaces no se vean subrayados */
+        .product-link {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+<body>
+    <%- include('template/barra-navegacion', { carrito }) %>
+
+    <main class="container">
+        <!-- Sección de la lista de deseos -->
+        <section class="wishlist">
+            <h2>Tu Lista de Deseos</h2>
+
+            <% if (productos.length > 0) { %>
+                <div class="product-grid">
+                    <% productos.forEach(producto => { %>
+                        <div class="product-card">
+                            <a href="/productos/detalle/<%= producto._id %>" class="product-link">
+                                <img src="<%= producto.imagen %>" alt="<%= producto.nombre %>">
+                                <h3><%= producto.nombre %></h3>
+                                <p class="price">$<%= producto.precio.toFixed(2) %></p>
+                            </a>
+                            <form action="/listaDeseos/listaDeseos/eliminar/<%= producto._id %>" method="POST">
+                                <button class="remove-btn" type="submit">Eliminar</button>
+                            </form>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <p>No hay productos en tu lista de deseos.</p>
+            <% } %>
+        </section>
+    </main>
+</body>
+</html>

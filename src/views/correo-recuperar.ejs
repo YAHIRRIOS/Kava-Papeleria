@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperación de Contraseña</title>
+  <link rel="stylesheet" href="/css/Correo-Recuperacion.css">
+</head>
+<body>
+    <% if (mensaje) { %>
+        <script>
+            alert('<%= mensaje %>');
+        </script>
+    <% } %>
+  <div class="container" >
+    <h2>Recuperar Contraseña</h2>
+    <p>Ingresa tu correo electrónico para recibir el código de recuperación:</p>
+    <form id="recover-password-form" action="/usuarios/recuperar/enviar-codigo" method="POST">
+      <input type="email" id="email" name="email" placeholder="Correo electrónico" required>
+      <button type="submit">Enviar Código</button>
+    </form>
+    <p id="recover-message"></p>
+  </div>
+</body>
+</html>

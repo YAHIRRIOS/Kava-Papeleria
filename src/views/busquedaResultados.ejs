@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultados de Búsqueda</title>
+    <link rel="stylesheet" href="/css/busquedaResultados.css">
+    <link rel="stylesheet" href="/css/barra-navegacion.css">
+</head>
+<body>
+    <%- include('template/barra-navegacion', { carrito }) %>
+
+    <main class="container">
+        <h2>Resultados para: "<%= query %>"</h2>
+
+        <% if (productos.length === 0) { %>
+            <p>No se encontraron productos con ese nombre.</p>
+        <% } else { %>
+            <section class="products">
+                <div class="product-grid">
+                    <% productos.forEach(producto => { %>
+                        <a href="/productos/detalle/<%= producto._id %>">
+                        <div class="product-card">
+                            <img src="<%= producto.imagen %>" alt="<%= producto.nombre %>">
+                            <h3><%= producto.nombre %></h3>
+                            <p class="price">$<%= producto.precio.toFixed(2) %></p>
+                            <p class="reviews">Stock disponible: <%= producto.stock %></p>
+                        </div>
+                        </a>
+                    <% }) %>
+                </div>
+            </section>
+        <% } %>
+    </main>
+</body>
+</html>

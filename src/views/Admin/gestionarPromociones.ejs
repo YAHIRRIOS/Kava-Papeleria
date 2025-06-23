@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Promociones</title>
+    <link rel="stylesheet" href="/css/Admin/gestionarPromociones.css">
+    <link rel="stylesheet" href="/css/Admin/dashboard.css">
+</head>
+
+<body>
+    <div class="admin-container">
+        <%- include('../template/dashboard') %>
+
+            <div class="content-area">
+                <div class="content-wrapper">
+                    <h3>Gestionar Promociones</h3>
+                    <form id="promotion-form" action="/admin/gestionarPromociones" method="POST">
+                        <!-- Acción -->
+                        <div class="form-group">
+                            <label for="action">Acción</label>
+                            <select id="action" name="action" onchange="toggleForm()">
+                                <option value="add">Agregar Promoción</option>
+                                <option value="delete">Eliminar Promoción</option>
+                            </select>
+                        </div>
+
+                        <!-- Agregar promoción -->
+                        <div id="add-promotion-form">
+                            <h4>Agregar Nueva Promoción</h4>
+
+                            <div class="form-group">
+                                <label for="quantity-to-buy">Cantidad de productos a comprar</label>
+                                <input type="number" id="quantity-to-buy" name="quantity-to-buy">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="product-to-buy">Producto a comprar</label>
+                                <select id="product-to-buy" name="product-to-buy">
+                                    <% productos.forEach(producto=> { %>
+                                        <option value="<%= producto._id %>">
+                                            <%= producto.nombre %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="product-to-gift">Producto a regalar</label>
+                                <select id="product-to-gift" name="product-to-gift">
+                                    <% productos.forEach(producto=> { %>
+                                        <option value="<%= producto._id %>">
+                                            <%= producto.nombre %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gift-quantity">Cantidad de productos a regalar</label>
+                                <input type="number" id="gift-quantity" name="gift-quantity">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="promotion-duration">Duración de la promoción (días)</label>
+                                <input type="number" id="promotion-duration" name="promotion-duration">
+                            </div>
+
+                            <button type="submit" class="btn-submit">Aplicar Promoción</button>
+                        </div>
+
+                        <!-- Eliminar promoción -->
+                        <div id="delete-promotion-form">
+                            <h4>Eliminar Promoción</h4>
+                            <div class="form-group">
+                                <label for="promotion-select">Seleccionar Promoción</label>
+                                <select id="promotion-select" name="promotion-select">
+                                    <% promociones.forEach(promo=> { %>
+                                        <option value="<%= promo._id %>">
+                                            Compra <%= promo.cantidadAComprar %>
+                                                <%= promo.productoAComprar ? promo.productoAComprar.nombre
+                                                    : '[Producto no disponible]' %>
+                                                    y te regalamos <%= promo.cantidadRegalo %>
+                                                        <%= promo.productoRegalo ? promo.productoRegalo.nombre
+                                                            : '[Regalo no disponible]' %>
+                                        </option>
+                                        <% }) %>
+
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn-submit">Eliminar Promoción</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+    </div>
+
+    <script>
+        function toggleForm() {
+            const action = document.getElementById('action').value;
+            const addForm = document.getElementById('add-promotion-form');
+            const deleteForm = document.getElementById('delete-promotion-form');
+
+            // Campos del form de agregar
+            const quantityToBuy = document.getElementById('quantity-to-buy');
+            const productToBuy = document.getElementById('product-to-buy');
+            const productToGift = document.getElementById('product-to-gift');
+            const giftQuantity = document.getElementById('gift-quantity');
+            const promotionDuration = document.getElementById('promotion-duration');
+
+            // Campo del form de eliminar
+            const promotionSelect = document.getElementById('promotion-select');
+
+            if (action === 'add') {
+                addForm.style.display = 'block';
+                deleteForm.style.display = 'none';
+
+                quantityToBuy.required = true;
+                productToBuy.required = true;
+                productToGift.required = true;
+                giftQuantity.required = true;
+                promotionDuration.required = true;
+
+                promotionSelect.required = false;
+            } else {
+                addForm.style.display = 'none';
+                deleteForm.style.display = 'block';
+
+                quantityToBuy.required = false;
+                productToBuy.required = false;
+                productToGift.required = false;
+                giftQuantity.required = false;
+                promotionDuration.required = false;
+
+                promotionSelect.required = true;
+            }
+        }
+
+        window.onload = function () {
+            toggleForm();
+        };
+    </script>
+</body>
+
+</html>

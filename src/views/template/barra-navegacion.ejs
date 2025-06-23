@@ -1,0 +1,136 @@
+<% if (session.errorMessage) { %>
+  <div class="alert alert-warning">
+    <%= session.errorMessage %></div>
+  <% session.errorMessage = null; %>
+<% } %>
+<% if (errorMessage) { %>
+  <script>alert("<%= errorMessage %>");</script>
+<% } %>
+
+<header class="header">
+  <div class="logo-container">
+    <a href="/productos/catalogo">
+      <img src="/img/logo.png" alt="Logo" style="width:200px;height:80px;border-radius:15px;opacity:0.9;">
+    </a>
+  </div>
+  <div class="search-container">
+    <form action="/productos/buscar" method="GET" class="search-box">
+      <input type="text" name="nombre" class="search-bar" placeholder="Buscar tus productos aquí...!" required>
+      <button type="submit" class="search-btn">🔍</button>
+    </form>
+    <a href="/productos/promociones" class="nav-btn">Promociones</a>
+    <a href="/usuarios/historial-pedidos" class="nav-btn">Historial de Pedidos</a>
+  </div>
+  <div class="header-icons">
+    <a href="/listaDeseos/verListaDeseos" class="icon-btn">❤️</a>
+    <a href="/usuarios/carrito" id="cart-button" class="icon-btn">🛒</a>
+    <div class="user-dropdown">
+      <button class="icon-btn" id="account">👤</button>
+      <div class="user-dropdown-content">
+        <a href="/usuarios/modificarDatos">Modificar Datos</a>
+        <a href="/usuarios/logout">Cerrar Sesión</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+<div class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-header">
+    <h2>Carrito de compras</h2>
+    <button id="close-cart">✖</button>
+  </div>
+  <div class="cart-items">
+    <% if (carrito.length > 0) { %>
+      <% carrito.forEach(item => {
+           const p = item.producto;
+           if (!p) return;
+      %>
+      <div class="cart-item <%= item.esRegalo ? 'regalo' : '' %>">
+        <img src="<%= p.imagen %>" alt="<%= p.nombre %>" style="width:80px;height:80px;object-fit:cover;">
+        <div>
+          <p><strong><%= p.nombre %></strong></p>
+
+          <% if (item.esRegalo) { %>
+            <p style="color: green;"><strong>Gratis</strong></p>
+            <p><strong>Cantidad:</strong> <%= item.cantidad %> (Regalo)</p>
+          <% } else { %>
+       <% if (p.precioConDescuento) { %>
+  <p>
+    <span style="text-decoration: line-through;">$<%= p.precioOriginal.toFixed(2) %></span>
+    <span style="color: green;">$<%= p.precioConDescuento.toFixed(2) %></span>
+  </p>
+<% } else { %>
+  <p>$<%= p.precio.toFixed(2) %></p>
+<% } %>
+
+            <form action="/usuarios/carrito/actualizar" method="POST">
+              <input type="hidden" name="productoId" value="<%= p._id %>">
+              <select name="cantidad" onchange="this.form.submit()">
+                <% for (let i = 1; i <= p.stock; i++) { %>
+                  <option value="<%= i %>" <%= i === item.cantidad ? "selected" : "" %>>
+                    <%= i %>
+                  </option>
+                <% } %>
+              </select>
+            </form>
+
+            <a href="/usuarios/carrito/eliminar/<%= p._id %>" class="remove">Eliminar</a>
+          <% } %>
+        </div>
+      </div>
+      <% }); %>
+    <% } else { %>
+      <p>No hay productos en el carrito.</p>
+    <% } %>
+  </div>
+  <div class="cart-footer">
+    <p><strong>Subtotal:</strong> $
+      <%= carrito
+        .filter(item => !item.esRegalo)
+        .reduce((total, item) => {
+          const price = item.producto.precioConDescuento ?? item.producto.precio;
+          return total + price * item.cantidad;
+        }, 0)
+        .toFixed(2) %>
+    </p>
+    <% if (carrito.length > 0) { %>
+      <a href="/pago/seleccionarDireccion"><button class="checkout">Pagar</button></a>
+    <% } else { %>
+      <button class="checkout" disabled style="background-color:#ccc;cursor:not-allowed;">Pagar</button>
+    <% } %>
+    <a href="/productos/catalogo" class="continue-shopping">Seguir Comprando</a>
+  </div>
+</div>
+
+<script>
+  const cartButton = document.getElementById('cart-button');
+  const cartSidebar = document.getElementById('cart-sidebar');
+  const overlay = document.getElementById('overlay');
+  const closeCart = document.getElementById('close-cart');
+  cartButton.addEventListener('click', e => {
+    e.preventDefault();
+    cartSidebar.classList.add('show-cart');
+    overlay.classList.add('show-overlay');
+  });
+  closeCart.addEventListener('click', () => {
+    cartSidebar.classList.remove('show-cart');
+    overlay.classList.remove('show-overlay');
+  });
+  overlay.addEventListener('click', () => {
+    cartSidebar.classList.remove('show-cart');
+    overlay.classList.remove('show-overlay');
+  });
+  document.getElementById('account').addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector('.user-dropdown').classList.toggle('show');
+  });
+  window.addEventListener('click', e => {
+    if (!document.querySelector('.user-dropdown').contains(e.target)) {
+      document.querySelector('.user-dropdown').classList.remove('show');
+    }
+  });
+  window.addEventListener('pageshow', event => {
+    if (event.persisted) window.location.reload();
+  });
+</script>

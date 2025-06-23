@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrador - Generar Reportes</title>
+    <link rel="stylesheet" href="/css/Admin/generar-reportes.css">
+    <link rel="stylesheet" href="/css/Admin/dashboard.css">
+</head>
+<body>
+    <div class="admin-container">
+        <%- include('../template/dashboard') %>
+
+        <!-- Área de contenido -->
+        <main class="content-area">
+            <div id="contenido">
+                <h3>Generar Reporte</h3>
+                <form id="generate-report-form" action="/admin/generarReporte" method="POST">
+                    <div class="form-group">
+                        <label for="report-type">Tipo de Reporte</label>
+                        <select id="report-type" name="report-type" required>
+                            <option value="ventas" <%= reportType === 'ventas' ? 'selected' : '' %>>Ventas</option>
+                            <option value="clientes" <%= reportType === 'clientes' ? 'selected' : '' %>>Clientes</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="report-time">Tiempo del Reporte</label>
+                        <select id="report-time" name="report-time" required>
+                            <option value="1" <%= reportTime === '1' ? 'selected' : '' %>>Último Día</option>
+                            <option value="7" <%= reportTime === '7' ? 'selected' : '' %>>Última Semana</option>
+                            <option value="30" <%= reportTime === '30' ? 'selected' : '' %>>Último Mes</option>
+                            <option value="365" <%= reportTime === '365' ? 'selected' : '' %>>Último Año</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn-submit">Generar Reporte</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

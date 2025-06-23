@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestionar Descuentos</title>
+  <link href="/css/Admin/gestionar-descuentos.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/Admin/dashboard.css">
+</head>
+<body>
+  <%- include('../template/dashboard') %>
+
+  <div class="content-area">
+    <div class="content-wrapper">
+      <h3>Gestionar Descuentos</h3>
+      <form id="discount-form" action="/admin/descuentos" method="POST">
+        <div class="form-group">
+          <label for="action">Acción</label>
+          <select id="action" name="action" onchange="toggleForm()">
+            <option value="add">Agregar Descuento</option>
+            <option value="delete">Eliminar Descuento</option>
+          </select>
+        </div>
+
+        <!-- Formulario Agregar -->
+        <div id="add-discount-form">
+          <h4>Agregar Nuevo Descuento</h4>
+
+          <div class="form-group">
+            <label for="product-to-discount">Seleccionar Producto</label>
+            <select id="product-to-discount" name="product-to-discount" required>
+              <% productos.forEach(prod => { %>
+                <option value="<%= prod._id %>"><%= prod.nombre %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="discount-percentage">Porcentaje de Descuento</label>
+            <input type="number" id="discount-percentage" name="discount-percentage" required placeholder="Ej. 20" min="1" max="100">
+          </div>
+
+          <div class="form-group">
+            <label for="discount-duration">Duración del Descuento (días)</label>
+            <input type="number" id="discount-duration" name="discount-duration" required placeholder="Ej. 30">
+          </div>
+
+          <button type="submit" class="btn-submit">Aplicar Descuento</button>
+        </div>
+
+        <!-- Formulario Eliminar -->
+        <div id="delete-discount-form" style="display:none;">
+          <h4>Eliminar Descuento</h4>
+          <div class="form-group">
+            <label for="discount-select">Seleccionar Descuento</label>
+            <select id="discount-select" name="discount-select">
+              <% descuentos.forEach(d => { %>
+                <% if (d.producto) { %>
+                  <option value="<%= d._id %>">
+                    <%= d.porcentaje %>% en <%= d.producto.nombre %> — expira en <%= d.duracionDias %> días
+                  </option>
+                <% } %>
+              <% }) %>
+            </select>
+          </div>
+
+          <button type="submit" class="btn-submit">Eliminar Descuento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+  function toggleForm() {
+    const action = document.getElementById('action').value;
+
+    const addForm = document.getElementById('add-discount-form');
+    const deleteForm = document.getElementById('delete-discount-form');
+
+    // Campos del formulario de agregar
+    const percentageInput = document.getElementById('discount-percentage');
+    const durationInput = document.getElementById('discount-duration');
+    const productSelect = document.getElementById('product-to-discount');
+
+    // Campo del formulario de eliminar
+    const deleteSelect = document.getElementById('discount-select');
+
+    if (action === 'add') {
+      addForm.style.display = 'block';
+      deleteForm.style.display = 'none';
+
+      // Habilitar campos de "Agregar"
+      percentageInput.disabled = false;
+      durationInput.disabled = false;
+      productSelect.disabled = false;
+
+      // Deshabilitar campo de "Eliminar"
+      deleteSelect.disabled = true;
+    } else {
+      addForm.style.display = 'none';
+      deleteForm.style.display = 'block';
+
+      // Deshabilitar campos de "Agregar"
+      percentageInput.disabled = true;
+      durationInput.disabled = true;
+      productSelect.disabled = true;
+
+      // Habilitar campo de "Eliminar"
+      deleteSelect.disabled = false;
+    }
+  }
+
+  // Ejecutar al cargar la página
+  window.onload = toggleForm;
+</script>
+
+</body>
+</html>

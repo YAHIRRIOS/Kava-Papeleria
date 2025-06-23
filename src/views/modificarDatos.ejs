@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/modificarDatos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/barra-navegacion.css">
+    <title>Modificar Datos de Usuario</title>
+</head>
+<body>
+    <!-- Header -->
+    <%- include('template/barra-navegacion', { carrito }) %>
+
+    <!-- Contenido -->
+    <main class="content-area">
+        <div id="contenido">
+            <div class="user-card">
+                <h3>Modificar Datos de Usuario</h3>
+                <p>Puedes modificar ambas o solo una si tú lo deseas</p>
+                <br>
+
+                <!-- MENSAJE DE RESPUESTA -->
+                <% if (mensaje) { %>
+                    <script>
+                        alert('<%= mensaje %>');
+                    </script>
+                <% } %>
+
+                <form id="modify-user-form" action="/usuarios/modificarDatos" method="POST">
+
+                    <!-- Correo electrónico -->
+                    <div class="form-group">
+                        <label for="user-email">Coloca tu nuevo Correo Electrónico</label>
+                        <input type="email" id="user-email" name="user-email" placeholder="Ejemplo: juan.perez@mail.com">
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="form-group">
+                        <label for="user-password">Coloca tu nueva Contraseña</label>
+                        <input type="password" id="user-password" name="user-password" placeholder="Ingresa tu nueva contraseña">
+                    </div>
+
+                    <!-- Confirmar Contraseña -->
+                    <div class="form-group">
+                        <label for="user-confirm-password">Confirma con tu Contraseña actual</label>
+                        <input type="password" id="user-confirm-password" name="user-confirm-password" placeholder="Confirma con tu contraseña actual">
+                    </div>
+
+                    <!-- Botón de modificación -->
+                    <div class="form-group">
+                        <button type="submit" class="btn-submit">Modificar Datos</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

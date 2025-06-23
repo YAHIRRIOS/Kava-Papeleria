@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/css/index.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/barra-navegacion.css">
+  <title>Promociones - Papelería Estrella</title>
+</head>
+<body>
+  <%- include('template/barra-navegacion', { carrito: carrito }) %>
+
+
+  <main class="container">
+    <h2>Promociones Activas</h2>
+    <section class="products">
+      <div class="product-grid">
+        <% if (productosPromocion.length > 0) { %>
+        <% productosPromocion.forEach(p => {
+     if (!p.productoAComprar || !p.productoRegalo) return;
+%>
+            <div class="product-card">
+              <a href="/productos/detalle/<%= p.productoAComprar._id %>" class="product-link">
+                <img src="<%= p.productoAComprar.imagen %>" alt="<%= p.productoAComprar.nombre %>">
+                <h3><%= p.productoAComprar.nombre %></h3>
+                <p class="price">
+  <% if (p.productoAComprar.precioConDescuento) { %>
+    <span style="text-decoration: line-through;">$<%= p.productoAComprar.precio.toFixed(2) %></span>
+    <span style="color: green;">$<%= p.productoAComprar.precioConDescuento.toFixed(2) %></span>
+  <% } else { %>
+    $<%= p.productoAComprar.precio.toFixed(2) %>
+  <% } %>
+</p>
+
+
+              </a>
+              <p class="promo-text">
+                Compra <strong><%= p.cantidadAComprar %></strong> y llévate <strong><%= p.cantidadRegalo %> gratis</strong> de <strong><%= p.productoRegalo.nombre %></strong>
+              </p>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p>No hay promociones activas actualmente.</p>
+        <% } %>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!-- Panel Lateral (Sidebar) -->
+<aside class="sidebar">
+  <h2>Administrador</h2>
+
+  <!-- Botón de Cerrar Sesión -->
+  <form action="/admin/logout" method="POST" style="margin: 10px 0;">
+    <button type="submit" style="
+      background-color: #c0392b;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+    ">
+      🔓 Cerrar sesión
+    </button>
+  </form>
+
+  <ul>
+    <li><a href="/admin/generarReportes" class="menu-option">Generar Reportes</a></li>
+    <li><a href="/admin/gestionarProductos" class="menu-option">Gestionar Productos</a></li>
+    <li><a href="/admin/gestionarStock" class="menu-option">Gestionar Stock</a></li>
+    <li><a href="/admin/descuentos" class="menu-option">Gestionar Descuentos</a></li>
+    <li><a href="/admin/gestionarPromociones" class="menu-option">Gestionar Promociones</a></li>
+  </ul>
+</aside>

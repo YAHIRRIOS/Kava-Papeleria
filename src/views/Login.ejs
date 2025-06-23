@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/login.css" rel="stylesheet">
+    <title>Login Farmacia</title>
+</head>
+<body>
+    <% var mensaje = typeof mensaje !== 'undefined' ? mensaje : null; %>
+    <% if (mensaje) { %>
+        <script>
+            alert('<%= mensaje %>');
+        </script>
+    <% }%>
+    <div class="login-container">
+        <div class="login-text">
+            <h2>Ingresa tu e-mail para iniciar sesión</h2>
+        </div>
+       
+        <div class="login-form">
+            <form action="/usuarios/login" method="POST">
+                <div class="input-group">
+                    <label for="email">E-mail para iniciar sesión</label>
+                    <input type="email" id="email" name="email" placeholder="E-mail" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Ingresa tu Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="Contraseña" required>
+                </div>
+                <button type="submit" class="login-btn">Continuar</button>
+            </form>
+            <button class="register-link"><a href="/usuarios/registerForm">Crear cuenta</a></button>
+            <button class="register-link"><a href="/usuarios/recuperar">Olvidaste tu contraseña?</a></button>
+        </div>
+    </div>
+</body>
+</html>

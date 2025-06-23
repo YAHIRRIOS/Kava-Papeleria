@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/css/pagoPaypal.css" />
+  <title>Pagar con PayPal</title>
+</head>
+<body>
+  <div class="container">
+    <img
+      class="paypal-logo"
+      src="https://www.paypalobjects.com/webstatic/icon/pp258.png"
+      alt="PayPal Logo"
+    />
+    <h2>Pago Seguro con PayPal</h2>
+
+    <!-- Botón real de PayPal -->
+    <div id="paypal-button-container"></div>
+  </div>
+
+  <!-- SDK DE PAYPAL SANDBOX -->
+  <script
+    src="https://www.sandbox.paypal.com/sdk/js?client-id=AcnvthSR26ho-Z5g7P_QUTL84zff4BEjv4yDgH2lOlTMwcjwg5zcwyUFGA3qTQKiVyG2cf1j6DsRZois&currency=MXN&intent=capture"
+  ></script>
+
+  <script>
+    paypal.Buttons({
+      createOrder: function (data, actions) {
+        return fetch('/pago/crear-orden', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        .then((res) => res.json())
+        .then((order) => {
+          if (!order.id) {
+            throw new Error('No se recibió un orderID');
+          }
+          return order.id;
+        })
+        .catch((err) => {
+          console.error(err);
+          alert('Error al crear la orden de pago');
+        });
+      },
+
+      onApprove: function (data, actions) {
+        return actions.order.capture().then(function (details) {
+          const paymentID = details.id;
+
+          // 1. Capturar orden en el backend
+          return fetch('/pago/capturar-orden', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ paymentID }),
+          })
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.success) {
+              alert(
+                '❌ Uno o más productos ya no están disponibles. Se actualizó tu carrito. Por favor revisa antes de pagar.'
+              );
+              window.location.href = '/usuarios/carrito';
+              return;
+            }
+
+            // 2. Obtener carrito actual
+            return fetch('/usuarios/obtenerCarrito')
+              .then((res) => res.json())
+              .then(({ carrito, total, direccionSeleccionada }) => {
+                // 3. Confirmar la compra (esto dispara el correo)
+                return fetch('/pago/confirmar-compra', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    carrito,
+                    total,
+                    direccionSeleccionada,
+                    paypalOrderId: paymentID
+                  })
+                });
+              })
+              .then(() => {
+                window.location.href = '/pago/pagoExitoso';
+              });
+          })
+          .catch((err) => {
+            console.error('❌ Error inesperado:', err);
+            alert(
+              '❌ Ocurrió un error inesperado al registrar tu orden. Intenta nuevamente.'
+            );
+            window.location.href = '/usuarios/carrito';
+          });
+        });
+      },
+
+      onCancel: function () {
+        window.location.href = '/pago/pagoCancelado';
+      },
+
+      onError: function (err) {
+        console.error(err);
+        alert('Error al procesar el pago');
+      },
+    }).render('#paypal-button-container');
+  </script>
+</body>
+</html>

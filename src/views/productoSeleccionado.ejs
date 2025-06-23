@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= producto.nombre %> - Detalle del Producto</title>
+    <link rel="stylesheet" href="/css/ProductoSeleccionar.css">
+    <link rel="stylesheet" href="/css/barra-navegacion.css">
+    <style>
+        .badge-descuento {
+            background-color: #e60000;
+            color: #fff;
+            padding: 2px 6px;
+            font-size: 0.9em;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        .error-message {
+            background-color: #ffdddd;
+            color: #a00;
+            padding: 10px;
+            border: 1px solid #a00;
+            text-align: center;
+            margin: 15px 20px;
+            border-radius: 5px;
+        }
+
+        .price {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .price del {
+            color: gray;
+        }
+
+        .final-price {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+
+<%- include('template/barra-navegacion', { carrito: carrito }) %>
+
+
+<% if (session.errorMessage) { %>
+    <div class="error-message">
+        <p><%= session.errorMessage %></p>
+    </div>
+    <% session.errorMessage = null; %>
+<% } %>
+
+<div style="margin-top: 30px;" class="product-container">
+    <div class="product-image">
+        <img src="<%= producto.imagen %>" alt="<%= producto.nombre %>">
+    </div>
+
+    <div class="product-details">
+        <p class="price">
+            Precio:
+            <% if (producto.descuento) { %>
+                <del>$<%= producto.precio.toFixed(2) %></del>
+                <strong>$<%= producto.descuento.precioDesc.toFixed(2) %></strong>
+                <span class="badge-descuento">‑<%= producto.descuento.porcentaje %>%</span>
+            <% } else { %>
+                <strong>$<%= producto.precio.toFixed(2) %></strong>
+            <% } %>
+        </p>
+
+        <h1><%= producto.nombre %></h1>
+
+        <p class="description">
+            <%= producto.descripcion %>
+        </p>
+
+        <form action="/usuarios/carrito/agregar" method="POST">
+            <input type="hidden" name="productoId" value="<%= producto._id %>">
+
+            <div class="options">
+                <div class="quantity">
+                    <label for="cantidad">Cantidad:</label>
+                    <select name="cantidad" id="cantidad">
+                        <% for (let i = 1; i <= Math.min(producto.stock, 20); i++) { %>
+                            <option value="<%= i %>"><%= i %></option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+
+            <p class="final-price">
+                <% if (producto.descuento) { %>
+                    $<%= producto.descuento.precioDesc.toFixed(2) %>
+                <% } else { %>
+                    $<%= producto.precio.toFixed(2) %>
+                <% } %>
+            </p>
+
+            <div class="buttons">
+                <button type="submit" class="add-to-cart">Añadir al carrito</button>
+            </div>
+        </form>
+
+        <form action="/listaDeseos/listaDeseos/agregar/<%= producto._id %>" method="POST">
+            <button type="submit" class="wishlist">❤️</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

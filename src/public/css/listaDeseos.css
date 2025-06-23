@@ -1,0 +1,81 @@
+/* Estilos para la Lista de Deseos */
+.wishlist {
+    padding: 20px;
+    background-color: #f8f8f8;
+    margin-top: 20px;
+}
+
+.wishlist h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.product-card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+    max-width: 75%;
+}
+
+.product-card:hover {
+    transform: scale(1.05);
+}
+
+.product-card img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.product-card h3 {
+    font-size: 18px;
+    margin: 10px 0 5px;
+}
+
+.price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+}
+
+.remove-btn {
+    background-color: #e64a19;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.remove-btn:hover {
+    background-color: #d43f00;
+}
+
+/* Estilo de la cuadrícula para productos (wishlist) */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+    gap: 20px;
+    justify-items: center; /* Centra los productos */
+    padding: 20px;
+}
+
+/* Responsivo: Si la pantalla es menor a 768px, pone 2 productos por fila */
+@media (max-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Si la pantalla es menor a 480px, pone 1 producto por fila */
+@media (max-width: 480px) {
+    .product-grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/historialPedidos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/barra-navegacion.css">
+    <title>Historial de Pedidos - Papelería Estrella</title>
+</head>
+<body>
+    
+<%- include('template/barra-navegacion', { carrito }) %>
+
+    <main class="container">
+        <!-- Sección de Historial de Pedidos -->
+        <section class="order-history">
+            <h2>Historial de Pedidos</h2>
+            <div class="order-list">
+                <!-- Aquí se llenarán los pedidos de manera dinámica -->
+                <% ventas.forEach(venta => { %>
+                    <div class="order-card">
+                        <h3>Pedido #<%= venta._id %></h3>
+                        <p class="order-date">Fecha: <%= venta.fecha.toLocaleDateString('es-ES') %></p>
+                        <p class="order-status">Estado: <%= venta.estado || 'Completado' %></p> <!-- Puedes agregar un estado si tienes uno en el modelo -->
+                        <div class="order-products">
+                            <% venta.productos.forEach(producto => { %>
+                                <p><strong><%= producto.nombre %>:</strong> <%= producto.cantidad %> - Precio Unitario: $<%= producto.precioUnitario %></p>
+                            <% }); %>
+                            <p><strong>Total:</strong> $<%= venta.total %></p>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

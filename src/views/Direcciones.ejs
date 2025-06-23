@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/Direcciones.css">
+    <link rel="stylesheet" href="/css/barra-navegacion.css">
+    <title>Checkout</title>
+    
+</head>
+<body>
+    <%- include('template/barra-navegacion', { carrito }) %>
+
+    <div class="container">
+
+        <!-- Sección: Direcciones guardadas -->
+        <div class="saved-addresses">
+            <h3>Direcciones Guardadas</h3>
+            <% if (direcciones && direcciones.length > 0) { %>
+                <!-- Mostrar direcciones y eliminar con formularios separados -->
+                <div class="saved-addresses">
+                  <h3>Direcciones Guardadas</h3>
+                
+                  <% if (direcciones && direcciones.length > 0) { %>
+                    <form action="/pago/pagoPaypal" method="POST">
+                      <% direcciones.forEach((direccion, index) => { %>
+                        <div class="address-card">
+                          <div class="address-top-row">
+                            <div class="radio-delete">
+                              <input type="radio" name="direccionSeleccionada" value="<%= direccion._id %>" <%= index === 0 ? 'checked' : '' %> />
+                              
+                              <!-- Botón de eliminar en su propio form separado -->
+                              <button type="button" class="delete-btn" onclick="eliminarDireccion('<%= direccion._id %>')">🗑️ Eliminar</button>
+
+                            </div>
+                          </div>
+                          <div class="address-details">
+                            <p><strong>Calle:</strong> <%= direccion.calle %></p>
+                            <p><strong>Ciudad:</strong> <%= direccion.ciudad %></p>
+                            <p><strong>Código Postal:</strong> <%= direccion.codigoPostal %></p>
+                            <p><strong>País:</strong> <%= direccion.pais %></p>
+                          </div>
+                        </div>
+                      <% }) %>
+                
+                      <button class="proceed-btn" type="submit">Proceder al pago</button>
+                      
+                    </form>
+                 
+                  <% } else { %>
+                    <p>No tienes direcciones guardadas aún.</p>
+                  <% } %>
+                </div>
+  
+                  
+            <% } else { %>
+                <p>No tienes direcciones guardadas aún.</p>
+            <% } %>
+        </div>
+    
+        <!-- Formulario para agregar nueva dirección -->
+        <div class="shipping-address">
+            <h3>Agregar nueva dirección</h3>
+            <% if (direcciones && direcciones.length >= 3) { %>
+                <p style="color: red;">Solo puedes guardar hasta 3 direcciones.</p>
+            <% } else { %>
+                <form action="/pago/agregarDireccion" method="POST">
+                    <div class="form-group">
+                        <label>Calle</label>
+                        <input type="text" name="calle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ciudad</label>
+                        <input type="text" name="ciudad" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Código Postal</label>
+                        <input type="text" name="codigoPostal" required>
+                    </div>
+                    <div class="form-group">
+                        <label>País</label>
+                        <input type="text" name="pais" required>
+                    </div>
+                    <button class="btn" type="submit">Guardar Dirección</button>
+                </form>
+            <% } %>
+        </div>
+    </div>
+    <script>
+      function eliminarDireccion(id) {
+        fetch(`/pago/eliminarDireccion/${id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+            location.reload(); // recarga para reflejar cambios
+          } else {
+            alert('Error al eliminar la dirección');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error al eliminar la dirección');
+        });
+      }
+    </script>
+    
+    </body>
+    </html>
+

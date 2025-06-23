@@ -1,0 +1,40 @@
+/* Estilo para el área de contenido */
+.content-area {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: white;
+    box-sizing: border-box;
+}
+
+/* Formulario de generar reporte */
+#generate-report-form .form-group {
+    margin-bottom: 20px;
+}
+
+#generate-report-form label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+#generate-report-form select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#generate-report-form .btn-submit {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#generate-report-form .btn-submit:hover {
+    background-color: #0056b3;
+}

@@ -1,0 +1,72 @@
+/* Estilos para el Historial de Pedidos */
+.order-history {
+    padding: 20px;
+    background-color: #f8f8f8;
+    margin-top: 20px;
+}
+
+.order-history h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.order-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.order-card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.order-card:hover {
+    transform: scale(1.05);
+}
+
+.order-card h3 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.order-date,
+.order-status {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.order-products {
+    margin-top: 10px;
+}
+
+.order-products p {
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.order-card .order-status {
+    font-weight: bold;
+    color: #34e619; /* Naranja para mostrar el estado */
+}
+
+.order-card .order-status:contains('Entregado') {
+    color: green;
+}
+
+.order-card .order-status:contains('Cancelado') {
+    color: rgb(43, 255, 0);
+}
+
+/* Estilo de la cuadrícula para pedidos */
+@media (max-width: 768px) {
+    .order-list {
+        flex-direction: column;
+    }
+}

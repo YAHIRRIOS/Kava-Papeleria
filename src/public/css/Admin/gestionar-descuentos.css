@@ -1,0 +1,141 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Contenedor principal */
+.admin-container {
+    display: flex;
+    width: 100%;
+    flex-grow: 1;
+}
+
+
+
+/* Estilo para el área de contenido */
+.content-area {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: white;
+    box-sizing: border-box;
+}
+
+.content-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+h3 {
+    text-align: center;
+    margin-top: 0;
+    color: #333;
+}
+
+/* Estilos para formularios y tarjetas */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+h4 {
+    margin-top: 20px;
+    color: #333;
+}
+
+/* Estilo para la tarjeta */
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+}
+
+form select, form input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+form .form-group {
+    margin-bottom: 20px;
+}
+
+form .btn-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745;
+    color: white;
+    font-size: 18px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+form .btn-submit:hover {
+    background-color: #218838;
+}
+
+/* Estilos para el formulario de eliminar descuento */
+#delete-discount-form {
+    display: none;
+}
+
+#add-discount-form {
+    display: none;
+}
+
+/* Estilo de la tarjeta cuando se muestra */
+#add-discount-form, #delete-discount-form {
+    display: block;
+}
+
+/* Estilos para mostrar u ocultar formularios */
+#add-discount-form, #delete-discount-form {
+    transition: opacity 0.3s ease;
+}
+
+/* Formulario oculto inicialmente */
+#add-discount-form, #delete-discount-form {
+    display: none;
+}
+
+/* Cuando el formulario es visible */
+form:target {
+    display: block;
+}
