@@ -10,6 +10,8 @@ const { listaRutas } = require('./Modulos/Lista-Deseos');
 const mongoose = require('mongoose');
 const { pagoRoutes } = require('./Modulos/Ventas');
 const cargarCarrito = require('./middlewares/cargarCarrito');
+const MongoStore = require('connect-mongo');
+
 // Configuración del puerto
 app.set('port', config.app.port);
 
@@ -21,8 +23,9 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   rolling: true,
+  store: MongoStore.create({ mongoUrl: config.db.mongoURI }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production',       // true en producción con HTTPS
+    secure: process.env.NODE_ENV === 'production', // HTTPS en prod
     httpOnly: true,
     sameSite: 'lax',
     maxAge: 3 * 60 * 1000 // 3 minutos
