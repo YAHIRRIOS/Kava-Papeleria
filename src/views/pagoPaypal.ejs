@@ -50,7 +50,7 @@
         return actions.order.capture().then(function (details) {
           const paymentID = details.id;
 
-          // 1. Capturar orden en el backend
+          // Capturar la orden en el backend
           return fetch('/pago/capturar-orden', {
             method: 'POST',
             headers: {
@@ -68,27 +68,8 @@
               return;
             }
 
-            // 2. Obtener carrito actual
-            return fetch('/usuarios/obtenerCarrito')
-              .then((res) => res.json())
-              .then(({ carrito, total, direccionSeleccionada }) => {
-                // 3. Confirmar la compra (esto dispara el correo)
-                return fetch('/pago/confirmar-compra', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    carrito,
-                    total,
-                    direccionSeleccionada,
-                    paypalOrderId: paymentID
-                  })
-                });
-              })
-              .then(() => {
-                window.location.href = '/pago/pagoExitoso';
-              });
+            // Pago exitoso, redirigir a página de confirmación
+            window.location.href = '/pago/pagoExitoso';
           })
           .catch((err) => {
             console.error('❌ Error inesperado:', err);

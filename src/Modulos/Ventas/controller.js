@@ -227,6 +227,8 @@ transporter.verify((error, success) => {
 
 
 exports.pagoExitoso = async (req, res) => {
+  console.log('➡️ usuarioId desde sesión:', req.session.usuarioId);
+
   const userId = req.session.usuarioId;
   if (!userId) return res.redirect('/usuarios/login');
 

@@ -16,6 +16,8 @@ const MongoStore = require('connect-mongo');
 app.set('port', config.app.port);
 
 // Middleware
+app.set('trust proxy', 1); // Confía en el proxy inverso (Nginx)
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(session({
@@ -25,10 +27,10 @@ app.use(session({
   rolling: true,
   store: MongoStore.create({ mongoUrl: config.db.mongoURI }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // HTTPS en prod
+    secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
     httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 3 * 60 * 1000 // 3 minutos
+    sameSite: 'none',
+    maxAge: 30 * 60 * 1000 // 30 minutos
   }
 }));
 
