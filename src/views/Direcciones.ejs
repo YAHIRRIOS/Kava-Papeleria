@@ -49,10 +49,12 @@
                     <div class="form-group">
                         <label>Calle</label>
                         <input type="text" name="calle" required>
+                        <span id="calleError" style="color: red; display: none;">La calle no debe contener caracteres especiales ni secuencias.</span>
                     </div>
                     <div class="form-group">
                         <label>Ciudad</label>
                         <input type="text" name="ciudad" required>
+                        <span id="ciudadError" style="color: red; display: none;">La ciudad no debe contener caracteres especiales ni secuencias.</span>
                     </div>
                     <div class="form-group">
                         <label>Código Postal</label>
@@ -70,7 +72,6 @@
                             <option value="Perú">Perú</option>
                             <option value="Estados Unidos">Estados Unidos</option>
                             <option value="Canadá">Canadá</option>
-                            <!-- Agrega más países si quieres -->
                         </select>
                     </div>
                     <button class="btn" type="submit">Guardar Dirección</button>
@@ -110,18 +111,33 @@
 
                     const errores = [];
 
-                    if (calle.length < 3 || /^\d+$/.test(calle)) {
-                        errores.push('La calle debe tener al menos 3 caracteres y no puede ser solo números.');
+                    // Validación de la calle (no debe contener caracteres especiales ni secuencias como ..... o ------)
+                    const regexCalle = /^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]+$/;
+                    const secuenciasNoPermitidas = /[-\.]{3,}/; // No permite secuencias de guiones o puntos
+
+                    if (!regexCalle.test(calle) || secuenciasNoPermitidas.test(calle)) {
+                        errores.push('La calle no debe contener caracteres especiales ni secuencias.');
+                        document.getElementById('calleError').style.display = 'block';
+                    } else {
+                        document.getElementById('calleError').style.display = 'none';
                     }
 
-                    if (ciudad.length < 3 || /^\d+$/.test(ciudad)) {
-                        errores.push('La ciudad debe tener al menos 3 caracteres y no puede ser solo números.');
+                    // Validación de la ciudad (igual que la calle)
+                    const regexCiudad = /^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]+$/;
+
+                    if (!regexCiudad.test(ciudad) || secuenciasNoPermitidas.test(ciudad)) {
+                        errores.push('La ciudad no debe contener caracteres especiales ni secuencias.');
+                        document.getElementById('ciudadError').style.display = 'block';
+                    } else {
+                        document.getElementById('ciudadError').style.display = 'none';
                     }
 
+                    // Validación del código postal (no se cambia)
                     if (!/^\d{5}$/.test(codigoPostal)) {
                         errores.push('El código postal debe tener exactamente 5 dígitos numéricos.');
                     }
 
+                    // Validación del país
                     if (pais === "") {
                         errores.push('Debe seleccionar un país válido.');
                     }
@@ -136,5 +152,4 @@
     </script>
 </body>
 </html>
-
 
