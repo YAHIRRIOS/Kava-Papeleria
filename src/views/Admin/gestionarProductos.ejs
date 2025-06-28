@@ -18,7 +18,7 @@
                 <div class="product-card">
                     <h3>Gestión de Productos</h3>
 
-                    <!-- Selección de acción (Agregar o Eliminar) -->
+                    <!-- Selección de acción -->
                     <div class="form-group">
                         <label for="action-type">Seleccionar Acción</label>
                         <select id="action-type" name="action-type" onchange="toggleForm()" required>
@@ -27,47 +27,41 @@
                         </select>
                     </div>
 
-                    <!-- Formulario de Agregar Producto -->
+                    <!-- Formulario Agregar Producto -->
                     <div id="add-product-form-container">
                         <form id="add-product-form" action="/productos/agregar" method="POST" enctype="multipart/form-data">
-                            <!-- Imagen -->
                             <div class="form-group">
                                 <label for="imagen">Imagen del Producto</label>
                                 <input type="file" id="imagen" name="imagen" accept="image/*" required>
                             </div>
 
-                            <!-- Nombre -->
                             <div class="form-group">
                                 <label for="nombre">Nombre del Producto</label>
                                 <input type="text" id="nombre" name="nombre" required>
                             </div>
 
-                            <!-- Descripción -->
                             <div class="form-group">
                                 <label for="descripcion">Descripción</label>
                                 <textarea id="descripcion" name="descripcion" rows="4" required></textarea>
                             </div>
 
-                            <!-- Precio -->
                             <div class="form-group">
                                 <label for="precio">Precio</label>
                                 <input type="number" id="precio" name="precio" step="0.01" required>
                             </div>
 
-                            <!-- Stock -->
                             <div class="form-group">
                                 <label for="stock">Stock</label>
                                 <input type="number" id="stock" name="stock" required>
                             </div>
 
-                            <!-- Enviar -->
                             <div class="form-group">
                                 <button type="submit" class="btn-submit">Agregar Producto</button>
                             </div>
                         </form>
                     </div>
 
-                    <!-- Formulario de Eliminar Producto -->
+                    <!-- Formulario Eliminar Producto -->
                     <div id="delete-product-form-container" style="display: none;">
                         <form id="delete-product-form" action="/productos/eliminar" method="POST">
                             <div class="form-group">
@@ -89,8 +83,8 @@
         </main>
     </div>
 
+    <!-- Script -->
     <script>
-        // Alterna los formularios según la acción seleccionada
         function toggleForm() {
             const actionType = document.getElementById('action-type').value;
             const addForm = document.getElementById('add-product-form-container');
@@ -99,7 +93,7 @@
             if (actionType === 'agregar') {
                 addForm.style.display = 'block';
                 deleteForm.style.display = 'none';
-            } else if (actionType === 'eliminar') {
+            } else {
                 addForm.style.display = 'none';
                 deleteForm.style.display = 'block';
             }
@@ -107,7 +101,6 @@
 
         window.onload = toggleForm;
 
-        // Validación del formulario de agregar producto
         document.getElementById('add-product-form').addEventListener('submit', function (e) {
             const nombre = document.getElementById('nombre').value.trim();
             const descripcion = document.getElementById('descripcion').value.trim();
@@ -116,12 +109,30 @@
 
             const errores = [];
 
-            if (nombre.length < 3 || /^\d+$/.test(nombre)) {
-                errores.push("El nombre debe tener al menos 3 caracteres y no puede ser solo números.");
+            const regexValido = /^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ.,;:¡!¿?"'()\-]+$/;
+            const contieneLetras = /[a-zA-ZáéíóúÁÉÍÓÚñÑ]/g;
+            const secuenciaInvalida = /[-\.]{3,}/;
+
+            // Validar nombre
+            const letrasNombre = (nombre.match(contieneLetras) || []).length;
+            if (
+                nombre.length < 3 || nombre.length > 20 ||
+                !regexValido.test(nombre) ||
+                letrasNombre < 4 ||
+                secuenciaInvalida.test(nombre)
+            ) {
+                errores.push("El nombre debe tener entre 3 y 20 caracteres, al menos 4 letras y no debe contener solo símbolos o repeticiones como '...' o '---'.");
             }
 
-            if (descripcion.length < 10 || /^\d+$/.test(descripcion)) {
-                errores.push("La descripción debe tener al menos 10 caracteres y no puede ser solo números.");
+            // Validar descripción
+            const letrasDescripcion = (descripcion.match(contieneLetras) || []).length;
+            if (
+                descripcion.length < 10 || descripcion.length > 60 ||
+                !regexValido.test(descripcion) ||
+                letrasDescripcion < 4 ||
+                secuenciaInvalida.test(descripcion)
+            ) {
+                errores.push("La descripción debe tener entre 10 y 60 caracteres, al menos 4 letras y no debe contener repeticiones como '...' o '---'.");
             }
 
             if (isNaN(precio) || precio <= 0) {
@@ -133,11 +144,10 @@
             }
 
             if (errores.length > 0) {
-                e.preventDefault(); // Detiene el envío del formulario
-                alert(errores.join('\n')); // Muestra errores en un alert
+                e.preventDefault();
+                alert(errores.join('\n'));
             }
         });
     </script>
 </body>
 </html>
-
