@@ -15,23 +15,54 @@
     <% } %>
     <div class="login-container">
         <div class="login-text">
-            <h2>Ingresa los datos para crear una cuenta</h2>
+            <h2>Registrate para crear una cuenta</h2>
         </div>
       
         <div class="login-form">
-            <form action="/usuarios/register" method="POST">
+            <form id="registerForm" action="/usuarios/register" method="POST">
+                <!-- Campo para el nombre -->
+                <div class="input-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Nombre" required>
+                    <span id="nombreError" style="color: red; display: none;">El nombre no puede contener números o caracteres especiales.</span>
+                </div>
+
+                <!-- Campo para el email -->
                 <div class="input-group">
                     <label for="email">E-mail</label>
                     <input type="email" id="email" name="email" placeholder="E-mail" required>
                 </div>
+
+                <!-- Campo para la contraseña -->
                 <div class="input-group">
-                    <label for="password">Ingresa una Contraseña</label>
+                    <label for="password">Contraseña</label>
                     <input type="password" id="password" name="password" placeholder="Contraseña" required>
                 </div>
+
                 <button type="submit" class="login-btn">Continuar</button>
             </form>
-            <div class="register-link"><a href="/usuarios/login">Ya tienes cuenta? Incia Sesion</a></div>
+            <div class="register-link"><a href="/usuarios/login">Ya tienes cuenta? Inicia sesión</a></div>
         </div>
     </div>
+
+    <script>
+        // Función para validar el nombre
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            var nombre = document.getElementById('nombre').value;
+            var nombreError = document.getElementById('nombreError');
+
+            // Expresión regular para validar solo letras y espacios (sin números ni caracteres especiales)
+            var regex = /^[A-Za-zÁáÉéÍíÓóÚúÑñ ]+$/;
+
+            if (!regex.test(nombre)) {
+                nombreError.style.display = 'block'; // Mostrar el error
+                event.preventDefault(); // Evitar que el formulario se envíe
+            } else {
+                nombreError.style.display = 'none'; // Ocultar el error si es válido
+            }
+        });
+    </script>
 </body>
 </html>
+
+

@@ -16,7 +16,7 @@
         <div id="contenido">
             <div class="user-card">
                 <h3>Modificar Datos de Usuario</h3>
-                <p>Puedes modificar ambas o solo una si tú lo deseas</p>
+                <p>Puedes modificar los 3 o solo una si tú lo deseas</p>
                 <br>
 
                 <!-- MENSAJE DE RESPUESTA -->
@@ -28,16 +28,25 @@
 
                 <form id="modify-user-form" action="/usuarios/modificarDatos" method="POST">
 
+                    <!-- Nombre -->
+                    <div class="form-group">
+                        <label for="user-name">Coloca tu nuevo Nombre</label>
+                        <input type="text" id="user-name" name="user-name" placeholder="Ejemplo: Juan Pérez">
+                        <span id="nameError" style="color: red; display: none;">El nombre no puede contener números ni caracteres especiales.</span>
+                    </div>
+
                     <!-- Correo electrónico -->
                     <div class="form-group">
                         <label for="user-email">Coloca tu nuevo Correo Electrónico</label>
                         <input type="email" id="user-email" name="user-email" placeholder="Ejemplo: juan.perez@mail.com">
+                        <span id="emailError" style="color: red; display: none;">Por favor ingresa un correo válido.</span>
                     </div>
 
                     <!-- Contraseña -->
                     <div class="form-group">
                         <label for="user-password">Coloca tu nueva Contraseña</label>
                         <input type="password" id="user-password" name="user-password" placeholder="Ingresa tu nueva contraseña">
+                        <span id="passwordError" style="color: red; display: none;">La contraseña debe tener al menos 4 caracteres.</span>
                     </div>
 
                     <!-- Confirmar Contraseña -->
@@ -54,5 +63,65 @@
             </div>
         </div>
     </main>
+
+    <script>
+        // Función para validar el nombre
+        function validarNombre(nombre) {
+            // Expresión regular para validar solo letras y espacios (sin números ni caracteres especiales)
+            var regex = /^[A-Za-zÁáÉéÍíÓóÚúÑñ ]+$/;
+            return regex.test(nombre);
+        }
+
+        // Función para validar el correo
+        function validarEmail(email) {
+            var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            return regex.test(email);
+        }
+
+        // Función para validar la contraseña
+        function validarContraseña(password) {
+            return password.length >= 4;
+        }
+
+        // Función para validar el formulario
+        document.getElementById('modify-user-form').addEventListener('submit', function(event) {
+            var nombre = document.getElementById('user-name').value;
+            var email = document.getElementById('user-email').value;
+            var password = document.getElementById('user-password').value;
+
+            var isValid = true;
+
+            // Validación del nombre
+            var nameError = document.getElementById('nameError');
+            if (!validarNombre(nombre)) {
+                nameError.style.display = 'block';
+                isValid = false;
+            } else {
+                nameError.style.display = 'none';
+            }
+
+            // Validación del correo
+            var emailError = document.getElementById('emailError');
+            if (!validarEmail(email)) {
+                emailError.style.display = 'block';
+                isValid = false;
+            } else {
+                emailError.style.display = 'none';
+            }
+
+            // Validación de la contraseña
+            var passwordError = document.getElementById('passwordError');
+            if (password && !validarContraseña(password)) {
+                passwordError.style.display = 'block';
+                isValid = false;
+            } else {
+                passwordError.style.display = 'none';
+            }
+
+            if (!isValid) {
+                event.preventDefault(); // Evitar que el formulario se envíe si hay errores
+            }
+        });
+    </script>
 </body>
 </html>
