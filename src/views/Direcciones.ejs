@@ -6,65 +6,46 @@
     <link rel="stylesheet" href="/css/Direcciones.css">
     <link rel="stylesheet" href="/css/barra-navegacion.css">
     <title>Checkout</title>
-    
 </head>
 <body>
     <%- include('template/barra-navegacion', { carrito }) %>
 
     <div class="container">
-
         <!-- Sección: Direcciones guardadas -->
         <div class="saved-addresses">
             <h3>Direcciones Guardadas</h3>
             <% if (direcciones && direcciones.length > 0) { %>
-                <!-- Mostrar direcciones y eliminar con formularios separados -->
-                <div class="saved-addresses">
-                  <h3>Direcciones Guardadas</h3>
-                
-                  <% if (direcciones && direcciones.length > 0) { %>
-                    <form action="/pago/pagoPaypal" method="POST">
-                      <% direcciones.forEach((direccion, index) => { %>
+                <form action="/pago/pagoPaypal" method="POST">
+                    <% direcciones.forEach((direccion, index) => { %>
                         <div class="address-card">
-                          <div class="address-top-row">
-                            <div class="radio-delete">
-                              <input type="radio" name="direccionSeleccionada" value="<%= direccion._id %>" <%= index === 0 ? 'checked' : '' %> />
-                              
-                              <!-- Botón de eliminar en su propio form separado -->
-                              <button type="button" class="delete-btn" onclick="eliminarDireccion('<%= direccion._id %>')">🗑️ Eliminar</button>
-
+                            <div class="address-top-row">
+                                <div class="radio-delete">
+                                    <input type="radio" name="direccionSeleccionada" value="<%= direccion._id %>" <%= index === 0 ? 'checked' : '' %> />
+                                    <button type="button" class="delete-btn" onclick="eliminarDireccion('<%= direccion._id %>')">🗑️ Eliminar</button>
+                                </div>
                             </div>
-                          </div>
-                          <div class="address-details">
-                            <p><strong>Calle:</strong> <%= direccion.calle %></p>
-                            <p><strong>Ciudad:</strong> <%= direccion.ciudad %></p>
-                            <p><strong>Código Postal:</strong> <%= direccion.codigoPostal %></p>
-                            <p><strong>País:</strong> <%= direccion.pais %></p>
-                          </div>
+                            <div class="address-details">
+                                <p><strong>Calle:</strong> <%= direccion.calle %></p>
+                                <p><strong>Ciudad:</strong> <%= direccion.ciudad %></p>
+                                <p><strong>Código Postal:</strong> <%= direccion.codigoPostal %></p>
+                                <p><strong>País:</strong> <%= direccion.pais %></p>
+                            </div>
                         </div>
-                      <% }) %>
-                
-                      <button class="proceed-btn" type="submit">Proceder al pago</button>
-                      
-                    </form>
-                 
-                  <% } else { %>
-                    <p>No tienes direcciones guardadas aún.</p>
-                  <% } %>
-                </div>
-  
-                  
+                    <% }) %>
+                    <button class="proceed-btn" type="submit">Proceder al pago</button>
+                </form>
             <% } else { %>
                 <p>No tienes direcciones guardadas aún.</p>
             <% } %>
         </div>
-    
+
         <!-- Formulario para agregar nueva dirección -->
         <div class="shipping-address">
             <h3>Agregar nueva dirección</h3>
             <% if (direcciones && direcciones.length >= 3) { %>
                 <p style="color: red;">Solo puedes guardar hasta 3 direcciones.</p>
             <% } else { %>
-                <form action="/pago/agregarDireccion" method="POST">
+                <form action="/pago/agregarDireccion" method="POST" id="form-direccion">
                     <div class="form-group">
                         <label>Calle</label>
                         <input type="text" name="calle" required>
@@ -79,35 +60,81 @@
                     </div>
                     <div class="form-group">
                         <label>País</label>
-                        <input type="text" name="pais" required>
+                        <select name="pais" required>
+                            <option value="">Seleccione un país</option>
+                            <option value="México">México</option>
+                            <option value="Argentina">Argentina</option>
+                            <option value="España">España</option>
+                            <option value="Colombia">Colombia</option>
+                            <option value="Chile">Chile</option>
+                            <option value="Perú">Perú</option>
+                            <option value="Estados Unidos">Estados Unidos</option>
+                            <option value="Canadá">Canadá</option>
+                            <!-- Agrega más países si quieres -->
+                        </select>
                     </div>
                     <button class="btn" type="submit">Guardar Dirección</button>
                 </form>
             <% } %>
         </div>
     </div>
+
+    <!-- Script de eliminación y validación -->
     <script>
-      function eliminarDireccion(id) {
-        fetch(`/pago/eliminarDireccion/${id}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(response => {
-          if (response.ok) {
-            location.reload(); // recarga para reflejar cambios
-          } else {
-            alert('Error al eliminar la dirección');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Error al eliminar la dirección');
+        function eliminarDireccion(id) {
+            fetch(`/pago/eliminarDireccion/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Error al eliminar la dirección');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al eliminar la dirección');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('form-direccion');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    const calle = form.calle.value.trim();
+                    const ciudad = form.ciudad.value.trim();
+                    const codigoPostal = form.codigoPostal.value.trim();
+                    const pais = form.pais.value;
+
+                    const errores = [];
+
+                    if (calle.length < 3 || /^\d+$/.test(calle)) {
+                        errores.push('La calle debe tener al menos 3 caracteres y no puede ser solo números.');
+                    }
+
+                    if (ciudad.length < 3 || /^\d+$/.test(ciudad)) {
+                        errores.push('La ciudad debe tener al menos 3 caracteres y no puede ser solo números.');
+                    }
+
+                    if (!/^\d{5}$/.test(codigoPostal)) {
+                        errores.push('El código postal debe tener exactamente 5 dígitos numéricos.');
+                    }
+
+                    if (pais === "") {
+                        errores.push('Debe seleccionar un país válido.');
+                    }
+
+                    if (errores.length > 0) {
+                        e.preventDefault();
+                        alert(errores.join('\n'));
+                    }
+                });
+            }
         });
-      }
     </script>
-    
-    </body>
-    </html>
+</body>
+</html>
+
 

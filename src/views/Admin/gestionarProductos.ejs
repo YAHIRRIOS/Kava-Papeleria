@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -67,7 +67,6 @@
                         </form>
                     </div>
 
-
                     <!-- Formulario de Eliminar Producto -->
                     <div id="delete-product-form-container" style="display: none;">
                         <form id="delete-product-form" action="/productos/eliminar" method="POST">
@@ -85,7 +84,6 @@
                             </div>
                         </form>
                     </div>
-
                 </div>
             </div>
         </main>
@@ -108,6 +106,38 @@
         }
 
         window.onload = toggleForm;
+
+        // Validación del formulario de agregar producto
+        document.getElementById('add-product-form').addEventListener('submit', function (e) {
+            const nombre = document.getElementById('nombre').value.trim();
+            const descripcion = document.getElementById('descripcion').value.trim();
+            const precio = parseFloat(document.getElementById('precio').value);
+            const stock = parseInt(document.getElementById('stock').value);
+
+            const errores = [];
+
+            if (nombre.length < 3 || /^\d+$/.test(nombre)) {
+                errores.push("El nombre debe tener al menos 3 caracteres y no puede ser solo números.");
+            }
+
+            if (descripcion.length < 10 || /^\d+$/.test(descripcion)) {
+                errores.push("La descripción debe tener al menos 10 caracteres y no puede ser solo números.");
+            }
+
+            if (isNaN(precio) || precio <= 0) {
+                errores.push("El precio debe ser un número mayor a 0.");
+            }
+
+            if (isNaN(stock) || stock < 0) {
+                errores.push("El stock debe ser un número igual o mayor a 0.");
+            }
+
+            if (errores.length > 0) {
+                e.preventDefault(); // Detiene el envío del formulario
+                alert(errores.join('\n')); // Muestra errores en un alert
+            }
+        });
     </script>
 </body>
 </html>
+
