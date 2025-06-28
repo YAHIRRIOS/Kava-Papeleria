@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const UsuarioSchema = new mongoose.Schema({
+  nombre: {  // Nuevo campo 'nombre' agregado
+    type: String,
+    required: true,
+    trim: true
+  },
   email: {
     type: String,
     required: true,
@@ -14,25 +19,24 @@ const UsuarioSchema = new mongoose.Schema({
   resetCode: String,
   resetCodeExpiration: Date,
   carrito: [
-  {
-    producto: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Producto'
-    },
-    cantidad: {
-      type: Number,
-      default: 1
-    },
-    esRegalo: {
-      type: Boolean,
-      default: false
-    },
-    precio: {
-      type: Number
+    {
+      producto: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Producto'
+      },
+      cantidad: {
+        type: Number,
+        default: 1
+      },
+      esRegalo: {
+        type: Boolean,
+        default: false
+      },
+      precio: {
+        type: Number
+      }
     }
-  }
-],
-
+  ],
   listaDeseos: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -50,6 +54,7 @@ const UsuarioSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Usuario', UsuarioSchema);
+
 
 
 

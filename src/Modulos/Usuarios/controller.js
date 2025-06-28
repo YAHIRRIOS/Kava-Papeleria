@@ -26,14 +26,14 @@ exports.recuperarContrasenaForm = (req, res) => {
 // Registrar nuevo usuario
 exports.crearUsuario = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { nombre, email, password } = req.body;  // Ahora también recogemos el 'nombre'
 
     const usuarioExistente = await Usuario.findOne({ email });
     if (usuarioExistente) {
       return res.redirect('/usuarios/registerForm?mensaje=El usuario ya existe');
     }
 
-    const nuevoUsuario = new Usuario({ email, password });
+    const nuevoUsuario = new Usuario({ nombre, email, password });  // Incluimos el nombre al crear el nuevo usuario
     await nuevoUsuario.save();
 
     return res.redirect('/usuarios/login?mensaje=Usuario registrado con éxito');
@@ -41,6 +41,7 @@ exports.crearUsuario = async (req, res) => {
     return res.redirect('/usuarios/registerForm?mensaje=Error al crear el usuario');
   }
 };
+
 exports.loginUsuario = async (req, res) => {
   const { email, password } = req.body;
 
@@ -426,7 +427,12 @@ exports.modificardatosForm = (req,res) => {
 
 exports.modificarDatos = async (req, res) => {
   try {
-    const { 'user-email': nuevoEmail, 'user-password': nuevaPassword, 'user-confirm-password': passwordActual } = req.body;
+    const { 
+      'user-name': nuevoNombre, 
+      'user-email': nuevoEmail, 
+      'user-password': nuevaPassword, 
+      'user-confirm-password': passwordActual 
+    } = req.body;
     const usuarioId = req.session.usuarioId; // Asegúrate de tener esto al iniciar sesión
 
     if (!usuarioId) {
@@ -444,11 +450,19 @@ exports.modificarDatos = async (req, res) => {
 
     let cambios = false;
 
+    // Modificar nombre
+    if (nuevoNombre && nuevoNombre !== usuario.nombre) {
+      usuario.nombre = nuevoNombre;
+      cambios = true;
+    }
+
+    // Modificar email
     if (nuevoEmail && nuevoEmail !== usuario.email) {
       usuario.email = nuevoEmail;
       cambios = true;
     }
 
+    // Modificar contraseña
     if (nuevaPassword) {
       usuario.password = nuevaPassword;
       cambios = true;
@@ -460,12 +474,13 @@ exports.modificarDatos = async (req, res) => {
 
     await usuario.save();
 
-    res.redirect('/usuarios/modificarDatos?mensaje=Datos actualizados con exito'); // O cualquier otra ruta después de modificar datos
+    res.redirect('/usuarios/modificarDatos?mensaje=Datos actualizados con éxito'); // O cualquier otra ruta después de modificar datos
   } catch (error) {
     console.error('Error al modificar datos:', error);
     res.status(500).send('Error del servidor');
   }
 };
+
 
 
 
