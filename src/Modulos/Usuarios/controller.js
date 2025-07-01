@@ -42,6 +42,8 @@ exports.crearUsuario = async (req, res) => {
   }
 };
 
+
+
 exports.loginUsuario = async (req, res) => {
   const { email, password } = req.body;
 
@@ -54,6 +56,18 @@ exports.loginUsuario = async (req, res) => {
       }
 
       req.session.admin = admin;
+
+      // 🔍 Verificamos si hay productos con stock bajo o agotado
+      const productosConProblema = await Producto.find({ stock: { $lte: 5 } });
+
+      // Si hay productos con alerta, renderizamos la vista
+      if (productosConProblema.length > 0) {
+        console.log("🧪 Productos con problema de stock:", productosConProblema);
+
+        return res.render('Admin/alertaStock', { productos: productosConProblema });
+      }
+
+      // Si no hay alertas, vamos a la vista normal
       return res.redirect('/admin/gestionarProductos');
     }
 
@@ -68,7 +82,7 @@ exports.loginUsuario = async (req, res) => {
     }
 
     req.session.usuario = usuario;
-    req.session.usuarioId = usuario._id; // ✅ ESTA LÍNEA AGREGA EL ID A LA SESIÓN
+    req.session.usuarioId = usuario._id;
 
     return res.redirect('/productos/catalogo');
   } catch (error) {
@@ -76,6 +90,7 @@ exports.loginUsuario = async (req, res) => {
     return res.redirect('/usuarios/login?mensaje=Error del servidor. Intenta de nuevo');
   }
 };
+
 
 // Enviar código de recuperación al correo
 exports.enviarCodigoRecuperacion = async (req, res) => {

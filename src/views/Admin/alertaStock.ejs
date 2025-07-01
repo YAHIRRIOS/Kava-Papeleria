@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Administrador - Alerta de Stock</title>
+    <link rel="stylesheet" href="/css/Admin/alertaStock.css">
+    <link rel="stylesheet" href="/css/Admin/dashboard.css">
+</head>
+<body>
+<div class="admin-container">
+    <!-- Sidebar -->
+    <%- include('../template/dashboard') %>
+
+    <!-- Área de contenido -->
+    <main class="content-area">
+        <div id="contenido">
+            <h3>Alerta de Stock Bajo</h3>
+
+            <% if (productos.length > 0) { %>
+                <div class="alert-container">
+                    <% productos.forEach(producto => { %>
+                        <% if (producto.stock === 0) { %>
+                            <div class="alert alert-danger">
+                                <strong>¡Atención!</strong> El producto <strong><%= producto.nombre %></strong> está agotado. 
+                                <form action="/admin/gestionarStock" method="GET">
+                                    <button class="btn-reabastecer">Reabastecer Stock</button>
+                                </form>
+                            </div>
+                        <% } else { %>
+                            <div class="alert alert-warning">
+                                <strong>¡Atención!</strong> El producto <strong><%= producto.nombre %></strong> tiene solo <%= producto.stock %> unidades. 
+                                <form action="/admin/gestionarStock" method="GET">
+                                    <button class="btn-reabastecer">Reabastecer Stock</button>
+                                </form>
+                            </div>
+                        <% } %>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <!-- Vista en blanco si no hay productos en alerta -->
+                <p>No hay alertas de stock en este momento.</p>
+            <% } %>
+        </div>
+    </main>
+</div>
+</body>
+</html>
+
