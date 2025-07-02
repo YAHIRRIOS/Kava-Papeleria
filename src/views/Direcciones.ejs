@@ -1,164 +1,193 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/Direcciones.css">
-    <link rel="stylesheet" href="/css/barra-navegacion.css">
-    <title>Checkout</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/css/Direcciones.css" />
+<link rel="stylesheet" href="/css/barra-navegacion.css" />
+<title>Checkout</title>
+<style>
+  .input-error {
+    border-color: red;
+  }
+  .error-message {
+    color: red;
+    font-size: 0.9em;
+    display: none;
+  }
+</style>
 </head>
 <body>
-    <%- include('template/barra-navegacion', { carrito }) %>
+<%- include('template/barra-navegacion', { carrito }) %>
 
-    <div class="container">
-        <!-- Sección: Direcciones guardadas -->
-        <div class="saved-addresses">
-            <h3>Direcciones Guardadas</h3>
-            <% if (direcciones && direcciones.length > 0) { %>
-                <form action="/pago/pagoPaypal" method="POST">
-                    <% direcciones.forEach((direccion, index) => { %>
-                        <div class="address-card">
-                            <div class="address-top-row">
-                                <div class="radio-delete">
-                                    <input type="radio" name="direccionSeleccionada" value="<%= direccion._id %>" <%= index === 0 ? 'checked' : '' %> />
-                                    <button type="button" class="delete-btn" onclick="eliminarDireccion('<%= direccion._id %>')">🗑️ Eliminar</button>
-                                </div>
-                            </div>
-                            <div class="address-details">
-                                <p><strong>Calle:</strong> <%= direccion.calle %></p>
-                                <p><strong>Ciudad:</strong> <%= direccion.ciudad %></p>
-                                <p><strong>Código Postal:</strong> <%= direccion.codigoPostal %></p>
-                                <p><strong>País:</strong> <%= direccion.pais %></p>
-                            </div>
-                        </div>
-                    <% }) %>
-                    <button class="proceed-btn" type="submit">Proceder al pago</button>
-                </form>
-            <% } else { %>
-                <p>No tienes direcciones guardadas aún.</p>
-            <% } %>
+<div class="container">
+  <div class="saved-addresses">
+    <h3>Direcciones Guardadas</h3>
+    <% if (direcciones && direcciones.length > 0) { %>
+      <form action="/pago/pagoPaypal" method="POST">
+        <% direcciones.forEach((direccion, index) => { %>
+          <div class="address-card">
+            <div class="address-top-row">
+              <div class="radio-delete">
+                <input type="radio" name="direccionSeleccionada" value="<%= direccion._id %>" <%= index === 0 ? 'checked' : '' %> />
+                <button type="button" class="delete-btn" onclick="eliminarDireccion('<%= direccion._id %>')">🗑️ Eliminar</button>
+              </div>
+            </div>
+            <div class="address-details">
+              <p><strong>Calle:</strong> <%= direccion.calle %></p>
+              <p><strong>Ciudad:</strong> <%= direccion.ciudad %></p>
+              <p><strong>Código Postal:</strong> <%= direccion.codigoPostal %></p>
+              <p><strong>País:</strong> <%= direccion.pais %></p>
+            </div>
+          </div>
+        <% }) %>
+        <button class="proceed-btn" type="submit">Proceder al pago</button>
+      </form>
+    <% } else { %>
+      <p>No tienes direcciones guardadas aún.</p>
+    <% } %>
+  </div>
+
+  <div class="shipping-address">
+    <h3>Agregar nueva dirección</h3>
+    <% if (direcciones && direcciones.length >= 3) { %>
+      <p style="color: red;">Solo puedes guardar hasta 3 direcciones.</p>
+    <% } else { %>
+      <form action="/pago/agregarDireccion" method="POST" id="form-direccion" novalidate>
+        <div class="form-group">
+          <label for="calle">Calle</label>
+          <input type="text" id="calle" name="calle" maxlength="30" required />
+          <span id="calleError" class="error-message">La calle debe tener entre 3 y 30 caracteres válidos y contener letras.</span>
         </div>
-
-        <!-- Formulario para agregar nueva dirección -->
-        <div class="shipping-address">
-            <h3>Agregar nueva dirección</h3>
-            <% if (direcciones && direcciones.length >= 3) { %>
-                <p style="color: red;">Solo puedes guardar hasta 3 direcciones.</p>
-            <% } else { %>
-                <form action="/pago/agregarDireccion" method="POST" id="form-direccion">
-                    <div class="form-group">
-                        <label>Calle</label>
-                        <input type="text" name="calle" id="calle" maxlength="30" required>
-                        <span id="calleError" style="color: red; display: none;">La calle debe tener al menos 3 caracteres válidos, contener letras y no incluir símbolos repetidos.</span>
-                    </div>
-                    <div class="form-group">
-                        <label>Ciudad</label>
-                        <input type="text" name="ciudad" id="ciudad" maxlength="20" required>
-                        <span id="ciudadError" style="color: red; display: none;">La ciudad debe tener al menos 3 caracteres válidos, contener letras y no incluir símbolos repetidos.</span>
-                    </div>
-                    <div class="form-group">
-                        <label>Código Postal</label>
-                        <input type="text" name="codigoPostal" id="codigoPostal" required>
-                        <span id="codigoPostalError" style="color: red; display: none;">El código postal debe tener exactamente 5 dígitos numéricos.</span>
-                    </div>
-                    <div class="form-group">
-                        <label>País</label>
-                        <select name="pais" required>
-                            <option value="">Seleccione un país</option>
-                            <option value="México">México</option>
-                            <option value="Argentina">Argentina</option>
-                            <option value="España">España</option>
-                            <option value="Colombia">Colombia</option>
-                            <option value="Chile">Chile</option>
-                            <option value="Perú">Perú</option>
-                            <option value="Estados Unidos">Estados Unidos</option>
-                            <option value="Canadá">Canadá</option>
-                        </select>
-                    </div>
-                    <button class="btn" type="submit">Guardar Dirección</button>
-                </form>
-            <% } %>
+        <div class="form-group">
+          <label for="ciudad">Ciudad</label>
+          <input type="text" id="ciudad" name="ciudad" maxlength="20" required />
+          <span id="ciudadError" class="error-message">La ciudad debe tener entre 3 y 20 caracteres válidos y contener letras.</span>
         </div>
-    </div>
+        <div class="form-group">
+          <label for="codigoPostal">Código Postal</label>
+          <input type="text" id="codigoPostal" name="codigoPostal" maxlength="5" required autocomplete="off" />
+          <span id="codigoPostalError" class="error-message">El código postal debe tener exactamente 5 dígitos numéricos.</span>
+        </div>
+        <div class="form-group">
+          <label for="pais">País</label>
+          <input type="text" id="pais" name="pais" maxlength="40" required autocomplete="off" />
+          <span id="paisError" class="error-message">Lo sentimos, no estamos disponibles en ese país.</span>
+        </div>
+        <button class="btn" type="submit">Guardar Dirección</button>
+      </form>
+    <% } %>
+  </div>
+</div>
 
-    <!-- Script de validaciones en tiempo real y eliminación -->
-    <script>
-        function eliminarDireccion(id) {
-            fetch(`/pago/eliminarDireccion/${id}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(response => {
-                if (response.ok) {
-                    location.reload();
-                } else {
-                    alert('Error al eliminar la dirección');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al eliminar la dirección');
-            });
-        }
+<script>
+function eliminarDireccion(id) {
+  fetch(`/pago/eliminarDireccion/${id}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(response => { if (response.ok) location.reload(); else alert('Error al eliminar'); })
+  .catch(() => alert('Error al eliminar'));
+}
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.getElementById('form-direccion');
-            const calleInput = document.getElementById('calle');
-            const ciudadInput = document.getElementById('ciudad');
-            const codigoPostalInput = document.getElementById('codigoPostal');
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('form-direccion');
+  const calleInput = document.getElementById('calle');
+  const ciudadInput = document.getElementById('ciudad');
+  const codigoPostalInput = document.getElementById('codigoPostal');
+  const paisInput = document.getElementById('pais');
 
-            const regexValido = /^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]+$/;
-            const contieneLetra = /[a-zA-ZáéíóúÁÉÍÓÚñÑ]/;
-            const secuenciasInvalidas = /[-\.]{3,}/;
+  const calleError = document.getElementById('calleError');
+  const ciudadError = document.getElementById('ciudadError');
+  const codigoPostalError = document.getElementById('codigoPostalError');
+  const paisError = document.getElementById('paisError');
 
-            function validarCampoTexto(input, errorId) {
-                const valor = input.value.trim();
-                const esValido = valor.length >= 3 &&
-                                 regexValido.test(valor) &&
-                                 contieneLetra.test(valor) &&
-                                 !secuenciasInvalidas.test(valor);
-                document.getElementById(errorId).style.display = esValido ? 'none' : 'block';
-                return esValido;
-            }
+  const paisesValidos = [
+    "Argentina","Bolivia","Chile","Colombia","Costa Rica","Cuba","Ecuador",
+    "El Salvador","Guatemala","Honduras","México","Nicaragua","Panamá",
+    "Paraguay","Perú","Puerto Rico","República Dominicana","Uruguay","Venezuela",
+    "Belice","Guyana","Surinam","Trinidad y Tobago","Jamaica","Bahamas",
+    "Barbados","Granada","Santa Lucía","San Vicente y las Granadinas",
+    "Antigua y Barbuda","Dominica","San Cristóbal y Nieves","Haití","Guayana Francesa", "Estados Unidos", "Canada", "España"
+  ];
 
-            function validarCodigoPostal() {
-                codigoPostalInput.value = codigoPostalInput.value.replace(/\D/g, '').slice(0, 5);
-                const esValido = /^\d{5}$/.test(codigoPostalInput.value);
-                document.getElementById('codigoPostalError').style.display = esValido ? 'none' : 'block';
-                return esValido;
-            }
+  function normalizar(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  }
 
-            // Validaciones en tiempo real
-            calleInput.addEventListener('input', () => validarCampoTexto(calleInput, 'calleError'));
-            ciudadInput.addEventListener('input', () => validarCampoTexto(ciudadInput, 'ciudadError'));
-            codigoPostalInput.addEventListener('input', validarCodigoPostal);
+  function validaTextoConLetras(text, min, max) {
+    const regexValido = /^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]+$/;
+    const contieneLetra = /[a-zA-ZáéíóúÁÉÍÓÚñÑ]/;
+    return text.length >= min && text.length <= max && regexValido.test(text) && contieneLetra.test(text);
+  }
 
-            // Bloquear pegar en código postal
-            codigoPostalInput.addEventListener('paste', function (e) {
-                e.preventDefault();
-            });
+  // Validaciones en tiempo real
+  calleInput.addEventListener('input', () => {
+    const ok = validaTextoConLetras(calleInput.value.trim(), 3, 30);
+    calleInput.classList.toggle('input-error', !ok);
+    calleError.style.display = ok ? 'none' : 'block';
+  });
 
-            // Validación final en submit
-            if (form) {
-                form.addEventListener('submit', function (e) {
-                    const calleValida = validarCampoTexto(calleInput, 'calleError');
-                    const ciudadValida = validarCampoTexto(ciudadInput, 'ciudadError');
-                    const codigoPostalValido = validarCodigoPostal();
-                    const paisSeleccionado = form.pais.value !== "";
+  ciudadInput.addEventListener('input', () => {
+    const ok = validaTextoConLetras(ciudadInput.value.trim(), 3, 20);
+    ciudadInput.classList.toggle('input-error', !ok);
+    ciudadError.style.display = ok ? 'none' : 'block';
+  });
 
-                    const errores = [];
-                    if (!calleValida) errores.push("Calle inválida.");
-                    if (!ciudadValida) errores.push("Ciudad inválida.");
-                    if (!codigoPostalValido) errores.push("Código postal inválido.");
-                    if (!paisSeleccionado) errores.push("Seleccione un país.");
+  codigoPostalInput.addEventListener('input', () => {
+    let v = codigoPostalInput.value.replace(/\D/g, '').slice(0,5);
+    codigoPostalInput.value = v;
+    const ok = /^\d{5}$/.test(v);
+    codigoPostalInput.classList.toggle('input-error', !ok);
+    codigoPostalError.style.display = ok ? 'none' : 'block';
+  });
 
-                    if (errores.length > 0) {
-                        e.preventDefault();
-                        alert(errores.join('\n'));
-                    }
-                });
-            }
-        });
-    </script>
+  codigoPostalInput.addEventListener('paste', e => {
+    const paste = (e.clipboardData || window.clipboardData).getData('text');
+    if (!/^\d{0,5}$/.test(paste)) e.preventDefault();
+  });
+
+  paisInput.addEventListener('input', () => {
+    const t = paisInput.value.trim();
+    if (!t) {
+      paisInput.classList.add('input-error');
+      paisError.textContent = 'El país es obligatorio.';
+      paisError.style.display = 'block';
+      return;
+    }
+    const tnorm = normalizar(t);
+    let found = null;
+    for (let p of paisesValidos) {
+      if (normalizar(p) === tnorm) {
+        found = p; break;
+      }
+    }
+    if (found) {
+      paisInput.value = found;
+      paisInput.classList.remove('input-error');
+      paisError.style.display = 'none';
+    } else {
+      paisInput.classList.add('input-error');
+      paisError.textContent = 'Lo sentimos, no estamos disponibles en ese país.';
+      paisError.style.display = 'block';
+    }
+  });
+
+  form.addEventListener('submit', e => {
+    const c = validaTextoConLetras(calleInput.value.trim(), 3, 30);
+    const ci = validaTextoConLetras(ciudadInput.value.trim(), 3, 20);
+    const cp = /^\d{5}$/.test(codigoPostalInput.value.trim());
+    const pv = paisesValidos.some(p => normalizar(p) === normalizar(paisInput.value.trim()));
+    if (!c || !ci || !cp || !pv) {
+      e.preventDefault();
+      if (!c) calleInput.classList.add('input-error'), calleError.style.display = 'block';
+      if (!ci) ciudadInput.classList.add('input-error'), ciudadError.style.display = 'block';
+      if (!cp) codigoPostalInput.classList.add('input-error'), codigoPostalError.style.display = 'block';
+      if (!pv) paisInput.classList.add('input-error'), paisError.style.display = 'block';
+      alert('Por favor corrige los errores antes de continuar.');
+    }
+  });
+});
+</script>
 </body>
 </html>
