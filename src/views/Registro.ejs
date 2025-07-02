@@ -13,9 +13,10 @@
             alert('<%= mensaje %>');
         </script>
     <% } %>
+
     <div class="login-container">
         <div class="login-text">
-            <h2>Registrate para crear una cuenta</h2>
+            <h2>Regístrate para crear una cuenta</h2>
         </div>
       
         <div class="login-form">
@@ -23,46 +24,87 @@
                 <!-- Campo para el nombre -->
                 <div class="input-group">
                     <label for="nombre">Nombre</label>
-                    <input type="text" id="nombre" name="nombre" placeholder="Nombre" required>
-                    <span id="nombreError" style="color: red; display: none;">El nombre no puede contener números o caracteres especiales.</span>
+                    <input type="text" id="nombre" name="nombre" placeholder="Nombre" required maxlength="30">
+                    <span id="nombreError" style="color: red; display: none;">
+                        El nombre debe tener al menos 3 letras, sin números ni caracteres especiales.
+                    </span>
                 </div>
 
                 <!-- Campo para el email -->
                 <div class="input-group">
                     <label for="email">E-mail</label>
-                    <input type="email" id="email" name="email" placeholder="E-mail" required>
+                    <input type="email" id="email" name="email" placeholder="E-mail" required maxlength="35">
+                    <span id="emailError" style="color: red; display: none;">Debe ser un email válido.</span>
                 </div>
 
                 <!-- Campo para la contraseña -->
                 <div class="input-group">
                     <label for="password">Contraseña</label>
-                    <input type="password" id="password" name="password" placeholder="Contraseña" required>
+                    <input type="password" id="password" name="password" placeholder="Contraseña" required maxlength="12">
+                    <span id="passwordError" style="color: red; display: none;">La contraseña debe tener entre 4 y 12 caracteres.</span>
                 </div>
 
                 <button type="submit" class="login-btn">Continuar</button>
             </form>
-            <div class="register-link"><a href="/usuarios/login">Ya tienes cuenta? Inicia sesión</a></div>
+            <div class="register-link"><a href="/usuarios/login">¿Ya tienes cuenta? Inicia sesión</a></div>
         </div>
     </div>
 
     <script>
-        // Función para validar el nombre
-        document.getElementById('registerForm').addEventListener('submit', function(event) {
-            var nombre = document.getElementById('nombre').value;
-            var nombreError = document.getElementById('nombreError');
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('registerForm');
+            const nombreInput = document.getElementById('nombre');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
 
-            // Expresión regular para validar solo letras y espacios (sin números ni caracteres especiales)
-            var regex = /^[A-Za-zÁáÉéÍíÓóÚúÑñ ]+$/;
+            const nombreError = document.getElementById('nombreError');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
 
-            if (!regex.test(nombre)) {
-                nombreError.style.display = 'block'; // Mostrar el error
-                event.preventDefault(); // Evitar que el formulario se envíe
-            } else {
-                nombreError.style.display = 'none'; // Ocultar el error si es válido
+            const nombreRegex = /^[A-Za-zÁáÉéÍíÓóÚúÑñ ]+$/;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            function validarNombre() {
+                const nombre = nombreInput.value.trim();
+                const soloLetras = nombreRegex.test(nombre);
+                const longitudValida = nombre.replace(/\s+/g, '').length >= 3 && nombre.length <= 30;
+                const valido = soloLetras && longitudValida;
+
+                nombreError.style.display = valido ? 'none' : 'block';
+                return valido;
             }
+
+            function validarEmail() {
+                const email = emailInput.value.trim();
+                const valido = emailRegex.test(email) && email.length <= 35;
+                emailError.style.display = valido ? 'none' : 'block';
+                return valido;
+            }
+
+            function validarPassword() {
+                const password = passwordInput.value;
+                const valido = password.length >= 4 && password.length <= 12;
+                passwordError.style.display = valido ? 'none' : 'block';
+                return valido;
+            }
+
+            // Validación en tiempo real
+            nombreInput.addEventListener('input', validarNombre);
+            emailInput.addEventListener('input', validarEmail);
+            passwordInput.addEventListener('input', validarPassword);
+
+            // Validación final al enviar
+            form.addEventListener('submit', function (event) {
+                const esNombreValido = validarNombre();
+                const esEmailValido = validarEmail();
+                const esPasswordValido = validarPassword();
+
+                if (!esNombreValido || !esEmailValido || !esPasswordValido) {
+                    event.preventDefault();
+                }
+            });
         });
     </script>
 </body>
 </html>
-
 

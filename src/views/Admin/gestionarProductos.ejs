@@ -1,11 +1,23 @@
 <!DOCTYPE html> 
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/css/Admin/gestionarProductos.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/Admin/dashboard.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="/css/Admin/gestionarProductos.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/Admin/dashboard.css" />
     <title>Administrador - Gestión de Productos</title>
+    <style>
+        /* Opcional: estilos para mensajes de error */
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            display: none;
+            margin-top: 3px;
+        }
+        input.invalid, textarea.invalid {
+            border-color: red;
+        }
+    </style>
 </head>
 <body>
     <div class="admin-container">
@@ -29,30 +41,43 @@
 
                     <!-- Formulario Agregar Producto -->
                     <div id="add-product-form-container">
-                        <form id="add-product-form" action="/productos/agregar" method="POST" enctype="multipart/form-data">
+                        <form id="add-product-form" action="/productos/agregar" method="POST" enctype="multipart/form-data" novalidate>
                             <div class="form-group">
                                 <label for="imagen">Imagen del Producto</label>
-                                <input type="file" id="imagen" name="imagen" accept="image/*" required>
+                                <input type="file" id="imagen" name="imagen" accept="image/*" required />
+                                <div id="imagenError" class="error-message">Debe seleccionar una imagen válida.</div>
                             </div>
 
                             <div class="form-group">
                                 <label for="nombre">Nombre del Producto</label>
-                                <input type="text" id="nombre" name="nombre" required>
+                                <input type="text" id="nombre" name="nombre" maxlength="20" required />
+                                <div id="nombreError" class="error-message">
+                                    El nombre debe tener entre 3 y 20 caracteres, al menos 4 letras y no contener símbolos repetidos.
+                                </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="descripcion">Descripción</label>
-                                <textarea id="descripcion" name="descripcion" rows="4" required></textarea>
+                                <textarea id="descripcion" name="descripcion" rows="4" maxlength="40" required></textarea>
+                                <div id="descripcionError" class="error-message">
+                                    La descripción debe tener entre 10 y 40 caracteres, al menos 4 letras y no contener símbolos repetidos.
+                                </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="precio">Precio</label>
-                                <input type="number" id="precio" name="precio" step="0.01" required>
+                                <input type="text" id="precio" name="precio" required />
+                                <div id="precioError" class="error-message">
+                                    El precio debe ser un número mayor a 0, con hasta 2 decimales.
+                                </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="stock">Stock</label>
-                                <input type="number" id="stock" name="stock" required>
+                                <input type="text" id="stock" name="stock" required />
+                                <div id="stockError" class="error-message">
+                                    El stock debe ser un número entero igual o mayor a 0.
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -99,55 +124,162 @@
             }
         }
 
-        window.onload = toggleForm;
+        window.onload = function() {
+            toggleForm();
+            attachRealTimeValidation();
+        };
 
-        document.getElementById('add-product-form').addEventListener('submit', function (e) {
-            const nombre = document.getElementById('nombre').value.trim();
-            const descripcion = document.getElementById('descripcion').value.trim();
-            const precio = parseFloat(document.getElementById('precio').value);
-            const stock = parseInt(document.getElementById('stock').value);
+        function attachRealTimeValidation() {
+            const nombreInput = document.getElementById('nombre');
+            const descripcionInput = document.getElementById('descripcion');
+            const precioInput = document.getElementById('precio');
+            const stockInput = document.getElementById('stock');
+            const imagenInput = document.getElementById('imagen');
+            const form = document.getElementById('add-product-form');
 
-            const errores = [];
+            const nombreError = document.getElementById('nombreError');
+            const descripcionError = document.getElementById('descripcionError');
+            const precioError = document.getElementById('precioError');
+            const stockError = document.getElementById('stockError');
+            const imagenError = document.getElementById('imagenError');
 
-            const regexValido = /^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ.,;:¡!¿?"'()\-]+$/;
+            const regexValidoTexto = /^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ.,;:¡!¿?"'()\-]+$/;
             const contieneLetras = /[a-zA-ZáéíóúÁÉÍÓÚñÑ]/g;
             const secuenciaInvalida = /[-\.]{3,}/;
+            const regexPrecio = /^\d+(\.\d{1,2})?$/;
+            const regexStock = /^\d+$/;
 
-            // Validar nombre
-            const letrasNombre = (nombre.match(contieneLetras) || []).length;
-            if (
-                nombre.length < 3 || nombre.length > 20 ||
-                !regexValido.test(nombre) ||
-                letrasNombre < 4 ||
-                secuenciaInvalida.test(nombre)
-            ) {
-                errores.push("El nombre debe tener entre 3 y 20 caracteres, al menos 4 letras y no debe contener solo símbolos o repeticiones como '...' o '---'.");
-            }
+            // Nombre: entre 3 y 20 chars, al menos 4 letras, sin repeticiones ...
+            nombreInput.addEventListener('input', () => {
+                const val = nombreInput.value.trim();
+                const letrasCount = (val.match(contieneLetras) || []).length;
+                if (
+                    val.length < 3 || val.length > 20 ||
+                    !regexValidoTexto.test(val) ||
+                    letrasCount < 4 ||
+                    secuenciaInvalida.test(val)
+                ) {
+                    nombreError.style.display = 'block';
+                    nombreInput.classList.add('invalid');
+                } else {
+                    nombreError.style.display = 'none';
+                    nombreInput.classList.remove('invalid');
+                }
+            });
 
-            // Validar descripción
-            const letrasDescripcion = (descripcion.match(contieneLetras) || []).length;
-            if (
-                descripcion.length < 10 || descripcion.length > 60 ||
-                !regexValido.test(descripcion) ||
-                letrasDescripcion < 4 ||
-                secuenciaInvalida.test(descripcion)
-            ) {
-                errores.push("La descripción debe tener entre 10 y 60 caracteres, al menos 4 letras y no debe contener repeticiones como '...' o '---'.");
-            }
+            // Descripción: entre 10 y 40 chars, al menos 4 letras, sin repeticiones
+            descripcionInput.addEventListener('input', () => {
+                const val = descripcionInput.value.trim();
+                const letrasCount = (val.match(contieneLetras) || []).length;
+                if (
+                    val.length < 10 || val.length > 40 ||
+                    !regexValidoTexto.test(val) ||
+                    letrasCount < 4 ||
+                    secuenciaInvalida.test(val)
+                ) {
+                    descripcionError.style.display = 'block';
+                    descripcionInput.classList.add('invalid');
+                } else {
+                    descripcionError.style.display = 'none';
+                    descripcionInput.classList.remove('invalid');
+                }
+            });
 
-            if (isNaN(precio) || precio <= 0) {
-                errores.push("El precio debe ser un número mayor a 0.");
-            }
+            // Precio: solo números positivos, max 2 decimales
+            precioInput.addEventListener('input', () => {
+                let val = precioInput.value;
 
-            if (isNaN(stock) || stock < 0) {
-                errores.push("El stock debe ser un número igual o mayor a 0.");
-            }
+                // Permitir solo dígitos y punto (.)
+                val = val.replace(/[^0-9.]/g, '');
 
-            if (errores.length > 0) {
-                e.preventDefault();
-                alert(errores.join('\n'));
-            }
-        });
+                // Sólo un punto
+                const parts = val.split('.');
+                if(parts.length > 2) {
+                    val = parts[0] + '.' + parts.slice(1).join('');
+                }
+
+                // Limitar a 2 decimales
+                if(parts.length === 2) {
+                    parts[1] = parts[1].substring(0,2);
+                    val = parts[0] + '.' + parts[1];
+                }
+
+                precioInput.value = val;
+
+                // Validar formato
+                if (!regexPrecio.test(val) || parseFloat(val) <= 0) {
+                    precioError.style.display = 'block';
+                    precioInput.classList.add('invalid');
+                } else {
+                    precioError.style.display = 'none';
+                    precioInput.classList.remove('invalid');
+                }
+            });
+
+            // Stock: solo enteros >= 0
+            stockInput.addEventListener('input', () => {
+                let val = stockInput.value;
+                // Permitir solo dígitos
+                val = val.replace(/\D/g, '');
+                stockInput.value = val;
+
+                if (!regexStock.test(val) || parseInt(val) < 0) {
+                    stockError.style.display = 'block';
+                    stockInput.classList.add('invalid');
+                } else {
+                    stockError.style.display = 'none';
+                    stockInput.classList.remove('invalid');
+                }
+            });
+
+            // Evitar pegar caracteres inválidos en precio y stock
+            precioInput.addEventListener('paste', (e) => {
+                const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+                if (!regexPrecio.test(pasteData)) {
+                    e.preventDefault();
+                }
+            });
+            stockInput.addEventListener('paste', (e) => {
+                const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+                if (!regexStock.test(pasteData)) {
+                    e.preventDefault();
+                }
+            });
+
+            // Validar imagen seleccionada (opcional simple)
+            imagenInput.addEventListener('change', () => {
+                if(imagenInput.files.length === 0) {
+                    imagenError.style.display = 'block';
+                    imagenInput.classList.add('invalid');
+                } else {
+                    imagenError.style.display = 'none';
+                    imagenInput.classList.remove('invalid');
+                }
+            });
+
+            // Validación final al enviar
+            form.addEventListener('submit', (e) => {
+                const errores = [];
+
+                // Disparar validaciones para mostrar errores en inputs
+                nombreInput.dispatchEvent(new Event('input'));
+                descripcionInput.dispatchEvent(new Event('input'));
+                precioInput.dispatchEvent(new Event('input'));
+                stockInput.dispatchEvent(new Event('input'));
+                imagenInput.dispatchEvent(new Event('change'));
+
+                if(nombreInput.classList.contains('invalid')) errores.push('Nombre inválido.');
+                if(descripcionInput.classList.contains('invalid')) errores.push('Descripción inválida.');
+                if(precioInput.classList.contains('invalid')) errores.push('Precio inválido.');
+                if(stockInput.classList.contains('invalid')) errores.push('Stock inválido.');
+                if(imagenInput.classList.contains('invalid')) errores.push('Imagen no seleccionada.');
+
+                if(errores.length > 0) {
+                    e.preventDefault();
+                    alert('Por favor corrige los siguientes errores:\n- ' + errores.join('\n- '));
+                }
+            });
+        }
     </script>
 </body>
 </html>

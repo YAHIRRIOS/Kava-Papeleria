@@ -48,17 +48,18 @@
                 <form action="/pago/agregarDireccion" method="POST" id="form-direccion">
                     <div class="form-group">
                         <label>Calle</label>
-                        <input type="text" name="calle" required>
+                        <input type="text" name="calle" id="calle" maxlength="30" required>
                         <span id="calleError" style="color: red; display: none;">La calle debe tener al menos 3 caracteres válidos, contener letras y no incluir símbolos repetidos.</span>
                     </div>
                     <div class="form-group">
                         <label>Ciudad</label>
-                        <input type="text" name="ciudad" required>
+                        <input type="text" name="ciudad" id="ciudad" maxlength="20" required>
                         <span id="ciudadError" style="color: red; display: none;">La ciudad debe tener al menos 3 caracteres válidos, contener letras y no incluir símbolos repetidos.</span>
                     </div>
                     <div class="form-group">
                         <label>Código Postal</label>
-                        <input type="text" name="codigoPostal" required>
+                        <input type="text" name="codigoPostal" id="codigoPostal" required>
+                        <span id="codigoPostalError" style="color: red; display: none;">El código postal debe tener exactamente 5 dígitos numéricos.</span>
                     </div>
                     <div class="form-group">
                         <label>País</label>
@@ -80,7 +81,7 @@
         </div>
     </div>
 
-    <!-- Script de eliminación y validación -->
+    <!-- Script de validaciones en tiempo real y eliminación -->
     <script>
         function eliminarDireccion(id) {
             fetch(`/pago/eliminarDireccion/${id}`, {
@@ -102,54 +103,54 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('form-direccion');
+            const calleInput = document.getElementById('calle');
+            const ciudadInput = document.getElementById('ciudad');
+            const codigoPostalInput = document.getElementById('codigoPostal');
+
+            const regexValido = /^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]+$/;
+            const contieneLetra = /[a-zA-ZáéíóúÁÉÍÓÚñÑ]/;
+            const secuenciasInvalidas = /[-\.]{3,}/;
+
+            function validarCampoTexto(input, errorId) {
+                const valor = input.value.trim();
+                const esValido = valor.length >= 3 &&
+                                 regexValido.test(valor) &&
+                                 contieneLetra.test(valor) &&
+                                 !secuenciasInvalidas.test(valor);
+                document.getElementById(errorId).style.display = esValido ? 'none' : 'block';
+                return esValido;
+            }
+
+            function validarCodigoPostal() {
+                codigoPostalInput.value = codigoPostalInput.value.replace(/\D/g, '').slice(0, 5);
+                const esValido = /^\d{5}$/.test(codigoPostalInput.value);
+                document.getElementById('codigoPostalError').style.display = esValido ? 'none' : 'block';
+                return esValido;
+            }
+
+            // Validaciones en tiempo real
+            calleInput.addEventListener('input', () => validarCampoTexto(calleInput, 'calleError'));
+            ciudadInput.addEventListener('input', () => validarCampoTexto(ciudadInput, 'ciudadError'));
+            codigoPostalInput.addEventListener('input', validarCodigoPostal);
+
+            // Bloquear pegar en código postal
+            codigoPostalInput.addEventListener('paste', function (e) {
+                e.preventDefault();
+            });
+
+            // Validación final en submit
             if (form) {
                 form.addEventListener('submit', function (e) {
-                    const calle = form.calle.value.trim();
-                    const ciudad = form.ciudad.value.trim();
-                    const codigoPostal = form.codigoPostal.value.trim();
-                    const pais = form.pais.value;
+                    const calleValida = validarCampoTexto(calleInput, 'calleError');
+                    const ciudadValida = validarCampoTexto(ciudadInput, 'ciudadError');
+                    const codigoPostalValido = validarCodigoPostal();
+                    const paisSeleccionado = form.pais.value !== "";
 
                     const errores = [];
-
-                    const regexValido = /^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]+$/;
-                    const contieneLetra = /[a-zA-ZáéíóúÁÉÍÓÚñÑ]/;
-                    const secuenciasInvalidas = /[-\.]{3,}/;
-
-                    // Validación calle
-                    if (
-                        calle.length < 3 ||
-                        !regexValido.test(calle) ||
-                        !contieneLetra.test(calle) ||
-                        secuenciasInvalidas.test(calle)
-                    ) {
-                        errores.push('La calle debe tener al menos 3 caracteres válidos y contener letras.');
-                        document.getElementById('calleError').style.display = 'block';
-                    } else {
-                        document.getElementById('calleError').style.display = 'none';
-                    }
-
-                    // Validación ciudad
-                    if (
-                        ciudad.length < 3 ||
-                        !regexValido.test(ciudad) ||
-                        !contieneLetra.test(ciudad) ||
-                        secuenciasInvalidas.test(ciudad)
-                    ) {
-                        errores.push('La ciudad debe tener al menos 3 caracteres válidos y contener letras.');
-                        document.getElementById('ciudadError').style.display = 'block';
-                    } else {
-                        document.getElementById('ciudadError').style.display = 'none';
-                    }
-
-                    // Código Postal
-                    if (!/^\d{5}$/.test(codigoPostal)) {
-                        errores.push('El código postal debe tener exactamente 5 dígitos numéricos.');
-                    }
-
-                    // País
-                    if (pais === "") {
-                        errores.push('Debe seleccionar un país válido.');
-                    }
+                    if (!calleValida) errores.push("Calle inválida.");
+                    if (!ciudadValida) errores.push("Ciudad inválida.");
+                    if (!codigoPostalValido) errores.push("Código postal inválido.");
+                    if (!paisSeleccionado) errores.push("Seleccione un país.");
 
                     if (errores.length > 0) {
                         e.preventDefault();
@@ -161,5 +162,3 @@
     </script>
 </body>
 </html>
-
-
