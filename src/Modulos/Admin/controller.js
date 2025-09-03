@@ -163,10 +163,12 @@ exports.actualizarStock = async (req, res) => {
     }
 
     await producto.save();
-       // Si stock es 0, eliminar promociones asociadas
-    if (stock == 0) {
+
+
+    if (producto.stock === 0) {
       await limpiarPromocionesAsociadas(producto._id);
     }
+
     console.log(`✅ Stock actualizado para producto ${producto.nombre}`);
     res.redirect('/admin/gestionarStock');
   } catch (error) {
@@ -174,6 +176,7 @@ exports.actualizarStock = async (req, res) => {
     res.status(500).send('Error al actualizar el stock');
   }
 };
+
 
 
 // Agregar promoción

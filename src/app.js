@@ -24,12 +24,12 @@ app.use(session({
   secret: config.secreto.Hash,
   resave: false,
   saveUninitialized: false,
-  rolling: true,
+  rolling: false,
   store: MongoStore.create({ mongoUrl: config.db.mongoURI }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
+    secure: false, // Solo HTTPS en producción process.env.NODE_ENV === 'production'
     httpOnly: true,
-    sameSite: 'none',
+    sameSite: 'lax',
     maxAge: 30 * 60 * 1000 // 30 minutos
   }
 }));

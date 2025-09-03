@@ -9,5 +9,9 @@ module.exports = {
     },
     secreto:{
         Hash: process.env.SECRETO
+    },
+    transporter:{
+    user: process.env.USER,
+    pass: processenv.PASS
     }
 }

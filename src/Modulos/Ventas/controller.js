@@ -4,6 +4,7 @@ const Producto = require('./../Productos/model')
 const nodemailer = require('nodemailer');
 const Descuento = require('../Descuentos/model')
 const axios = require('axios');
+const config = require('../../config')
 
 const paypal = require('paypal-rest-sdk');
 
@@ -212,10 +213,14 @@ exports.capturarOrden = async (req, res) => {
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'reccontra965@gmail.com',
-    pass: 'phgt qabd gpii aqmk' // tu app password
+    user: config.transporter.user,
+    pass: config.transporter.pass //  app password
+  },
+  tls: {
+    rejectUnauthorized: false //  Acepta certificados autofirmados
   }
 });
+
 
 // Verifica conexión SMTP al iniciar
 transporter.verify((error, success) => {
